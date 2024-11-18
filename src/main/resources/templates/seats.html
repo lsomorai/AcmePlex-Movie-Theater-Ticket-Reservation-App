@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Seat Selection</title>
+    <style>
+        .seat-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 20px;
+        }
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+        .seat {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .seat.special {
+            border-color: gold;
+            background-color: #fff3cd;
+        }
+        .seat:hover {
+            background-color: #e9ecef;
+        }
+        .seat.selected {
+            background-color: #28a745;
+            color: white;
+        }
+        .row-label {
+            width: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .screen {
+            width: 80%;
+            height: 30px;
+            background-color: #dee2e6;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="seat-container">
+        <div class="screen">SCREEN</div>
+        
+        <div th:each="entry : ${seatsByRow}">
+            <div class="row">
+                <div class="row-label" th:text="${entry.key}"></div>
+                <div th:each="seat : ${entry.value}" 
+                     th:class="${'seat ' + (seat.seatType == 'SPECIAL' ? 'special' : '')}"
+                     th:data-seat-id="${seat.id}"
+                     th:text="${seat.seatNumber}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.seat').forEach(seat => {
+            seat.addEventListener('click', function() {
+                this.classList.toggle('selected');
+                // You can add logic here to handle seat selection
+                const seatId = this.getAttribute('data-seat-id');
+                console.log('Seat clicked:', seatId);
+            });
+        });
+    </script>
+</body>
+</html> 
