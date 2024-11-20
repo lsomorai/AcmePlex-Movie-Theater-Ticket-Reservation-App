@@ -20,4 +20,28 @@ public class SeatService {
     public List<Seat> getAvailableSeatsByShowtime(Showtime showtime) {
         return seatRepository.findAvailableSeatsByShowtime(showtime);
     }
+
+    public void reserveSeat(Long seatId) {
+        Seat seat = seatRepository.findById(seatId)
+                .orElseThrow(() -> new IllegalArgumentException("Seat not found"));
+
+        if (!"AVAILABLE".equalsIgnoreCase(seat.getStatus())) {
+            throw new IllegalArgumentException("Seat is not available for reservation");
+        }
+
+        seat.setStatus("RESERVED");
+        seatRepository.save(seat);
+    }
+
+    public void cancelReservation(Long seatId) {
+        Seat seat = seatRepository.findById(seatId)
+                .orElseThrow(() -> new IllegalArgumentException("Seat not found"));
+    
+        if (!"RESERVED".equalsIgnoreCase(seat.getStatus())) {
+            throw new IllegalArgumentException("Seat is not currently reserved");
+        }
+    
+        seat.setStatus("AVAILABLE");
+        seatRepository.save(seat);
+    }
 }
