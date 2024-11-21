@@ -1,4 +1,4 @@
-package com.example.movieticket.model;
+package com.example.movieticket.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Modifying;
+import com.example.movieticket.entity.Payment;
 
 @Repository
 public interface PaymentRespository extends JpaRepository<Payment, Long> {

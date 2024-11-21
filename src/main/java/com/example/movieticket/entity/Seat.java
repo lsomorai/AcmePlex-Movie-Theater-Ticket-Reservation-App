@@ -1,5 +1,10 @@
+/*
+ * Lucien
+ */
 package com.example.movieticket.entity;
 import jakarta.persistence.*;
+import lombok.Data;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity

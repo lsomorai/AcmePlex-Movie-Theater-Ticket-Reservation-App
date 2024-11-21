@@ -4,20 +4,21 @@
 package com.example.movieticket.entity;
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDateTime;
 import lombok.NonNull;
+import java.time.LocalDateTime;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+
 @Entity
-@Table(name = "movies")
+@Table(name = "theaters")
 @Data
-public class Movie {
+public class Theatre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
-    @Column(nullable = false)
-    private String title;
+    @Column(name = "name", nullable = false)
+    private String name;
 
 }

@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.example.movieticket.model.Payment;
-import com.example.movieticket.model.PaymentRespository;
-import com.example.movieticket.model.User;
-import com.example.movieticket.model.UserRespository;
+import com.example.movieticket.entity.Payment;
+import com.example.movieticket.repository.PaymentRespository;
+import com.example.movieticket.entity.User;
+import com.example.movieticket.repository.UserRespository;
 
 import jakarta.servlet.http.HttpSession;
 

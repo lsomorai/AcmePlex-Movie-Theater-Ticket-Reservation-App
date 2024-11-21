@@ -1,4 +1,7 @@
-package com.example.movieticket.model;
+/*
+ * Cory
+ */
+package com.example.movieticket.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,8 +11,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.EqualsAndHashCode;
 import jakarta.persistence.FetchType;
+import lombok.NonNull;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity()
+@Table(name = "payments")
+@Data
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
