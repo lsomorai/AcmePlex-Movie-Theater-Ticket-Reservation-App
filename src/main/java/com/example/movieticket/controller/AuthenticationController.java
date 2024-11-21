@@ -1,3 +1,6 @@
+/*
+ * Cory
+ */
 package com.example.movieticket.controller;
 
 import java.util.List;
@@ -25,51 +28,48 @@ public class AuthenticationController {
 	@Autowired
 	private UserRespository userRespository;
 
+	@GetMapping("/")
+	public String showLoginPage() {
+		return "index";
+	}
+
+	@GetMapping("/register")
+	public String showRegisterPage() {
+		return "register";
+	}
+
 	@PostMapping("/login")
 	public String login(User entity, HttpSession session, Model model) {
+		List<User> users = userRespository.findByUsernamePassword(
+			entity.getUsername(),
+			entity.getPassword()
+		);
 
-		if (userRespository.findByUsernamePassword(entity.getUsername(),
-				entity.getPassword()).size() > 0) {
-			List<User> users = userRespository.findByUsernamePassword(entity.getUsername(),
-					entity.getPassword());
+		if (!users.isEmpty()) {
 			session.setAttribute("username", users.get(0).getUsername());
-			return "greeting";
+			return "redirect:/theatres";
 		} else {
 			model.addAttribute("errorMessage", "Invalid username or password");
-			return "/register";
+			return "index";
 		}
-
 	}
 
 	@PostMapping("/signup")
 	public String signup(User entity, Model model) {
 		if (userRespository.findByUsername(entity.getUsername()).size() > 0) {
-
 			model.addAttribute("errorMessage", "Username already exists");
-			return "/register";
+			return "register";
 		} else {
+			entity.setUserType("REGULAR");
 			userRespository.save(entity);
-			if (entity.getUserType().equals("RUs")) {
-
-				User user = new User();
-				user = userRespository.findByUsername(entity.getUsername()).get(0);
-				model.addAttribute("amount", "20.00");
-				model.addAttribute("userid", user.getId());
-				return "/payment";
-			} else {
-
-				model.addAttribute("errorMessage", "sucessful registered a new generl user!");
-				return "/register";
-			}
-
+			model.addAttribute("errorMessage", "Registration successful! Please login.");
+			return "index";
 		}
-
 	}
 
 	@GetMapping("/logout")
-	public String logout(Model model) {
-		model.addAttribute("username", null);
-		return "/register";
+	public String logout(HttpSession session) {
+		session.invalidate();
+		return "redirect:/";
 	}
-
 }
