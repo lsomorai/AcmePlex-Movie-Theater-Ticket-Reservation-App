@@ -22,6 +22,7 @@ public class User {
     private String password;
     private String usertype;
 
+
     public User(String username, String password) {
         this.username = username;
         this.password = password;
