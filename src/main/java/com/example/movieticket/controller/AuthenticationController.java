@@ -56,15 +56,33 @@ public class AuthenticationController {
 
 	@PostMapping("/signup")
 	public String signup(User entity, Model model) {
+		// Validate username length
+		if (entity.getUsername() == null || entity.getUsername().length() < 5) {
+			model.addAttribute("errorMessage", "Username must be at least 5 characters long");
+			model.addAttribute("isError", true);
+			return "register";
+		}
+		
+		// Validate password length
+		if (entity.getPassword() == null || entity.getPassword().length() < 5) {
+			model.addAttribute("errorMessage", "Password must be at least 5 characters long");
+			model.addAttribute("isError", true);
+			return "register";
+		}
+
+		// Check if username already exists
 		if (userRespository.findByUsername(entity.getUsername()).size() > 0) {
 			model.addAttribute("errorMessage", "Username already exists");
+			model.addAttribute("isError", true);
 			return "register";
-		} else {
-			entity.setUserType("REGULAR");
-			userRespository.save(entity);
-			model.addAttribute("errorMessage", "Registration successful! Please login.");
-			return "index";
 		}
+		
+		// If all validations pass, create the user
+		entity.setUserType("REGULAR");
+		userRespository.save(entity);
+		model.addAttribute("errorMessage", "Registration successful! Please login.");
+		model.addAttribute("isError", false);
+		return "index";
 	}
 
 	@GetMapping("/logout")

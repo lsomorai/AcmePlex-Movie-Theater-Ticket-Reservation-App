@@ -34,9 +34,22 @@
             gap: 0.5rem;
         }
         .error-message {
-            color: red;
             text-align: center;
             margin-top: 1rem;
+        }
+        .error-message.success {
+            color: #198754;  /* Bootstrap's success green */
+        }
+        .error-message.error {
+            color: #dc3545;  /* Bootstrap's danger red */
+        }
+        .info-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            line-height: 1.4;
         }
     </style>
 </head>
@@ -46,10 +59,17 @@
         
         <form action="/signup" method="post">
             <div class="form-group">
-                <input type="text" class="form-control" name="username" placeholder="Username" required>
+                <input type="text" class="form-control" name="username" placeholder="Username" required minlength="5">
             </div>
             <div class="form-group">
-                <input type="password" class="form-control" name="password" placeholder="Password" required>
+                <input type="password" class="form-control" name="password" placeholder="Password" required minlength="5">
+            </div>
+            <div class="form-group">
+                <input type="email" class="form-control" placeholder="Email" disabled>
+                <div class="info-text">
+                    Note: For demonstration purposes, we've chosen not to store email addresses to protect user privacy. 
+                    You'll have the option to enter an email address for receipt purposes during checkout, but it won't be saved in our system.
+                </div>
             </div>
             <input type="hidden" name="usertype" value="REGULAR">
             
@@ -58,7 +78,10 @@
                 <a href="/" class="btn btn-secondary">Back to Login</a>
             </div>
             
-            <div class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+            <div th:if="${errorMessage}" 
+                 th:text="${errorMessage}"
+                 th:class="${'error-message ' + (isError ? 'error' : 'success')}">
+            </div>
         </form>
     </div>
     

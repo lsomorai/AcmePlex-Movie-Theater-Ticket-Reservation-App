@@ -34,9 +34,14 @@
             gap: 0.5rem;
         }
         .error-message {
-            color: red;
             text-align: center;
             margin-top: 1rem;
+        }
+        .error-message.success {
+            color: #198754;  /* Bootstrap's success green */
+        }
+        .error-message.error {
+            color: #dc3545;  /* Bootstrap's danger red */
         }
     </style>
 </head>
@@ -58,8 +63,9 @@
                 <a href="/theatres" class="btn btn-outline-primary">Continue as Guest</a>
             </div>
             
-            <div class="error-message" th:if="${errorMessage}" th:text="${errorMessage}">
-                Invalid username or password
+            <div th:if="${errorMessage}" 
+                 th:text="${errorMessage}"
+                 th:class="${'error-message ' + (isError ? 'error' : 'success')}">
             </div>
         </form>
     </div>
