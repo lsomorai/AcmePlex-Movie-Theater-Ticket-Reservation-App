@@ -28,5 +28,6 @@ public class Showtime {
     private LocalDate date;
 
     @Column(name = "session", nullable = false)
-    private int session;
+    private int session; //1 for morning, 2 for afternoon, 3 for evening
+
 }

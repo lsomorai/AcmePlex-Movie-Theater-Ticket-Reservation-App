@@ -5,5 +5,5 @@ import com.example.movieticket.entity.Seat;
 import java.util.List;
 
 public interface SeatRepository extends JpaRepository<Seat, Long> {
-    List<Seat> findByTheaterIdAndSession(Integer theaterId, Integer session);
+    List<Seat> findByShowtimeId(Long showtimeId);
 } 

@@ -19,8 +19,9 @@ public class Seat {
     @Column(name = "theater_id", nullable = false)
     private Integer theaterId;
 
-    @Column(name = "session", nullable = false)
-    private Integer session;
+    @ManyToOne
+    @JoinColumn(name = "showtime_id", nullable = false)
+    private Showtime showtime;
 
     @Column(name = "seat_row", nullable = false)
     private String seatRow;

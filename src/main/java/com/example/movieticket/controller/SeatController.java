@@ -19,11 +19,10 @@ public class SeatController {
 
     @GetMapping("/seats")
     public String showSeats(Model model) {
-        // Hard-coded theater and session for now
-        int theaterId = 1;
-        int sessionId = 1;
+        // Hard-coded showtime_id for now
+        Long showtimeId = 1L;
         
-        List<Seat> seats = seatRepository.findByTheaterIdAndSession(theaterId, sessionId);
+        List<Seat> seats = seatRepository.findByShowtimeId(showtimeId);
         
         // Organize seats by row for easier display
         Map<String, List<Seat>> seatsByRow = new TreeMap<>();

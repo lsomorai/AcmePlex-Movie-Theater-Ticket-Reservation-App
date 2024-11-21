@@ -1,26 +1,39 @@
-theaters = [1, 2, 3]
-sessions = [1, 2, 3]
-rows = ['A', 'B', 'C', 'D', 'E']
-seats = range(1, 11)  # 1 to 10
-
-# Start the SQL statement
-sql = "INSERT INTO seats (theater_id, session, seat_row, seat_number, seat_type, price, status) VALUES\n"
-values = []
-
-# Generate all combinations
-for theater in theaters:
-    for session in sessions:
+def generate_seats_sql():
+    # Configuration
+    rows = ['A', 'B', 'C', 'D', 'E']
+    seats_per_row = 10
+    price = 15.00
+    total_showtimes = 81  # From your showtimes table
+    
+    # SQL file header
+    sql = "USE qbtppw7yhyi4ttyc;\n\n"
+    sql += "-- Inserting seats for all showtimes\n"
+    sql += "INSERT INTO seats (theater_id, showtime_id, seat_row, seat_number, seat_type, price, status) VALUES\n"
+    
+    values = []
+    # For each showtime
+    for showtime_id in range(1, total_showtimes + 1):
+        # Calculate theater_id based on showtime_id pattern (1-3 repeating)
+        theater_id = ((showtime_id - 1) // 3 % 3) + 1
+        
+        # For each row
         for row in rows:
-            for seat in seats:
-                seat_type = 'SPECIAL' if (row == 'A' and seat <= 5) else 'STANDARD'
-                value = f"({theater}, {session}, '{row}', {seat}, '{seat_type}', 15.00, 'AVAILABLE')"
-                values.append(value)
+            # For each seat in row
+            for seat_num in range(1, seats_per_row + 1):
+                # Determine seat type
+                seat_type = "special" if row == 'A' and seat_num <= 5 else "regular"
+                
+                values.append(
+                    f"({theater_id}, {showtime_id}, '{row}', {seat_num}, '{seat_type}', {price:.2f}, 'AVAILABLE')"
+                )
+    
+    # Join values with commas and add semicolon at the end
+    sql += ",\n".join(values) + ";"
+    
+    return sql
 
-# Join all values with commas and add semicolon at the end
-sql += ",\n".join(values) + ";"
+# Generate and save to file
+with open('generate_seats.sql', 'w') as f:
+    f.write(generate_seats_sql())
 
-# Write to file
-with open('insert_seats.sql', 'w') as f:
-    f.write(sql)
-
-print(f"Generated {len(values)} seat entries in 'insert_seats.sql'")
+print("SQL script generated successfully!")

@@ -62,7 +62,7 @@
             <div class="row">
                 <div class="row-label" th:text="${entry.key}"></div>
                 <div th:each="seat : ${entry.value}" 
-                     th:class="${'seat ' + (seat.seatType == 'SPECIAL' ? 'special' : '')}"
+                     th:class="${'seat ' + (seat.seatType == 'special' ? 'special' : '')}"
                      th:data-seat-id="${seat.id}"
                      th:text="${seat.seatNumber}">
                 </div>

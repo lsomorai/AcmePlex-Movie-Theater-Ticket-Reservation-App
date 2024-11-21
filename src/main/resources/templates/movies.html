@@ -22,13 +22,26 @@
             justify-content: center;
             padding: 20px;
         }
+        .theatre-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center my-4">Now Showing</h1>
+        <div th:if="${theatre}" class="theatre-info">
+            <h2 class="text-center" th:text="${'Movies at ' + theatre.name}">Theatre Name</h2>
+        </div>
+        <h1 th:unless="${theatre}" class="text-center my-4">Now Showing</h1>
         
         <div class="movies-container">
+            <div th:if="${movies.empty}" class="alert alert-info">
+                No movies currently showing at this theatre.
+            </div>
+            
             <div th:each="movie : ${movies}" class="card movie-card">
                 <img class="card-img-top movie-image" 
                      th:src="${movie.title == 'Iron Man' ? 'https://m.media-amazon.com/images/M/MV5BMTczNTI2ODUwOF5BMl5BanBnXkFtZTcwMTU0NTIzMw@@._V1_.jpg' :
@@ -37,9 +50,14 @@
                      th:alt="${movie.title}">
                 <div class="card-body">
                     <h5 class="card-title" th:text="${movie.title}">Movie Title</h5>
-                    <a href="#" class="btn btn-primary">Book Now</a>
+                    <a th:href="@{/theatres/{theatreId}/movies/{movieId}/showtimes(theatreId=${theatre.id},movieId=${movie.id})}" 
+                       class="btn btn-primary">View Showtimes</a>
                 </div>
             </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="/theatres" class="btn btn-secondary">Back to Theatres</a>
         </div>
     </div>
 

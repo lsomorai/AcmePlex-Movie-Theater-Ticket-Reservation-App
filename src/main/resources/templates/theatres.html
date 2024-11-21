@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Theatres</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .theatre-card {
+            width: 18rem;
+            margin: 15px;
+            transition: transform 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .theatre-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .theatre-image {
+            height: 200px;
+            object-fit: cover;
+        }
+        .theatres-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card-body {
+            text-align: center;
+        }
+        .theatre-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">Our Theatres</h1>
+        
+        <div class="theatres-container">
+            <div th:each="theatre : ${theatres}" class="card theatre-card">
+                <img class="card-img-top theatre-image" 
+                     th:src="${theatre.name == 'Scotiabank Chinook' ? 
+                            'https://www.calgarymovies.com/wp-content/uploads/2017/12/Scotiabank-Theatre-Chinook.jpg' :
+                            theatre.name == 'Cineplex Crowfoot' ?
+                            'https://www.calgarymovies.com/wp-content/uploads/2017/12/Cineplex-Crowfoot-Crossing.jpg' :
+                            'https://www.calgarymovies.com/wp-content/uploads/2017/12/Landmark-Country-Hills.jpg'}"
+                     th:alt="${theatre.name}">
+                <div class="card-body">
+                    <h5 class="theatre-title" th:text="${theatre.name}">Theatre Name</h5>
+                    <a th:href="@{/theatres/{id}/movies(id=${theatre.id})}" class="btn btn-primary">View Movies</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
