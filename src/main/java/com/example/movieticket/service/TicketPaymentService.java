@@ -23,39 +23,66 @@ public class TicketPaymentService {
     private final SeatRepository seatRepository;
 
     @Transactional
-    public void processTicketPayment(PaymentRequest paymentRequest, Integer userId) {
-        // Save payment
-        Payment payment = new Payment();
-        payment.setCardnumber(paymentRequest.getCardnumber());
-        payment.setCardname(paymentRequest.getCardname());
-        payment.setExpirydate(paymentRequest.getExpirydate());
-        payment.setCvv(paymentRequest.getCvv());
-        payment.setAmount(paymentRequest.getAmount());
-        paymentRepository.save(payment);
+    public String processTicketPayment(PaymentRequest paymentRequest, Integer userId) {
+        try {
+            // Save payment
+            Payment payment = new Payment();
+            payment.setCardnumber(paymentRequest.getCardnumber());
+            payment.setCardname(paymentRequest.getCardname());
+            payment.setExpirydate(paymentRequest.getExpirydate());
+            payment.setCvv(paymentRequest.getCvv());
+            payment.setAmount(paymentRequest.getAmount());
+            payment.setUserid(userId);
+            payment.setNote("TICKET_PURCHASE");
+            
+            System.out.println("Saving payment for user: " + userId); // Add logging
+            paymentRepository.save(payment);
 
-        // Create tickets
-        String[] seatIds = paymentRequest.getSelectedSeats().split(",");
-        for (String seatId : seatIds) {
-            Seat seat = seatRepository.findById(Long.parseLong(seatId)).orElseThrow();
-            
-            Ticket ticket = new Ticket();
-            ticket.setUserId(userId);
-            ticket.setMovieId(seat.getShowtime().getMovie().getId());
-            ticket.setSeatId(seat.getId());
-            ticket.setPurchaseDate(LocalDateTime.now());
-            ticket.setStatus(TicketStatus.ACTIVE);
-            ticket.setIsRefundable(true);
-            ticket.setReferenceNumber(generateReferenceNumber());
-            
-            ticketRepository.save(ticket);
-            
-            // Update seat status
-            seat.setStatus("BOOKED");
-            seatRepository.save(seat);
+            String lastReferenceNumber = null;
+            // Create tickets
+            String[] seatIds = paymentRequest.getSelectedSeats().split(",");
+            for (String seatId : seatIds) {
+                System.out.println("Processing seat: " + seatId); // Add logging
+                Seat seat = seatRepository.findById(Long.parseLong(seatId))
+                    .orElseThrow(() -> new RuntimeException("Seat not found: " + seatId));
+                
+                Ticket ticket = new Ticket();
+                ticket.setUserId(userId);
+                ticket.setMovieId(seat.getShowtime().getMovie().getId());
+                ticket.setSeatId(seat.getId());
+                ticket.setPurchaseDate(LocalDateTime.now());
+                ticket.setStatus(TicketStatus.ACTIVE);
+                ticket.setIsRefundable(true);
+                String referenceNumber = generateReferenceNumber();
+                ticket.setReferenceNumber(referenceNumber);
+                lastReferenceNumber = referenceNumber;
+                
+                System.out.println("Saving ticket with reference: " + ticket.getReferenceNumber()); // Add logging
+                ticketRepository.save(ticket);
+                
+                // Update seat status
+                seat.setStatus("BOOKED");
+                seatRepository.save(seat);
+            }
+            return lastReferenceNumber; // Return the last reference number
+        } catch (Exception e) {
+            System.out.println("Error in processTicketPayment: " + e.getMessage()); // Add logging
+            throw e; // Re-throw to trigger transaction rollback
         }
     }
 
+    @Transactional
     private String generateReferenceNumber() {
-        return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        // Find the highest reference number in the database
+        String lastRefNumber = ticketRepository.findTopByOrderByReferenceNumberDesc()
+                .map(Ticket::getReferenceNumber)
+                .orElse("REF00000");  // Default if no tickets exist
+        
+        // Extract the numeric part and increment
+        int currentNumber = Integer.parseInt(lastRefNumber.substring(3));
+        int nextNumber = currentNumber + 1;
+        
+        // Format the new reference number with leading zeros
+        return String.format("REF%05d", nextNumber);
     }
 } 

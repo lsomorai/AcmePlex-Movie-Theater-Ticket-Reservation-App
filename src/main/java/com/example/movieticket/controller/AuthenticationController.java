@@ -35,8 +35,9 @@ public class AuthenticationController {
 	private UserRepository userRepository;
 
 	@GetMapping("/")
-	public String showLoginPage(Model model) {
+	public String showLoginPage(@RequestParam(required = false) String returnUrl, Model model) {
 		model.addAttribute("user", new User());
+		model.addAttribute("returnUrl", returnUrl);
 		return "index";
 	}
 
@@ -46,19 +47,27 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/login")
-	public String login(User entity, HttpSession session, Model model) {
+	public String login(User entity, HttpSession session, Model model, 
+	                   @RequestParam(required = false) String returnUrl) {
 		List<User> users = userRepository.findByUsernamePassword(
 			entity.getUsername(),
 			entity.getPassword()
 		);
 
 		if (!users.isEmpty()) {
-			session.setAttribute("username", users.get(0).getUsername());
+			User user = users.get(0);
+			session.setAttribute("username", user.getUsername());
+			session.setAttribute("userId", user.getId());
+			
+			if (returnUrl != null && !returnUrl.isEmpty()) {
+				return "redirect:" + returnUrl;
+			}
 			return "redirect:/dashboard";
 		} else {
 			model.addAttribute("user", new User());
 			model.addAttribute("errorMessage", "Invalid username or password");
 			model.addAttribute("isError", true);
+			model.addAttribute("returnUrl", returnUrl);
 			return "index";
 		}
 	}
