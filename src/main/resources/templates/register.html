@@ -51,18 +51,28 @@
             text-align: left;
             line-height: 1.4;
         }
+        .verify-success {
+            color: #198754;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
         <h2 class="title">Register</h2>
         
-        <form action="/signup" method="post">
+        <form id="registerForm" action="/signup" method="post">
             <div class="form-group">
-                <input type="text" class="form-control" name="username" placeholder="Username" required minlength="5">
+                <input type="text" class="form-control" id="username" placeholder="Username" required minlength="5">
+                <div id="usernameVerifyMessage" class="verify-success hidden"></div>
             </div>
             <div class="form-group">
-                <input type="password" class="form-control" name="password" placeholder="Password" required minlength="5">
+                <input type="password" class="form-control" id="password" placeholder="Password" required minlength="5">
+                <div id="passwordVerifyMessage" class="verify-success hidden"></div>
             </div>
             <div class="form-group">
                 <input type="email" class="form-control" placeholder="Email" disabled>
@@ -71,10 +81,13 @@
                     You'll have the option to enter an email address for receipt purposes during checkout, but it won't be saved in our system.
                 </div>
             </div>
+            <input type="hidden" name="username" id="hiddenUsername">
+            <input type="hidden" name="password" id="hiddenPassword">
             <input type="hidden" name="usertype" value="REGULAR">
             
             <div class="btn-container">
-                <button type="submit" class="btn btn-primary">Register</button>
+                <button type="button" id="verifyButton" class="btn btn-primary">Verify Username</button>
+                <button type="submit" id="proceedButton" class="btn btn-success hidden">Proceed to Payment</button>
                 <a href="/" class="btn btn-secondary">Back to Login</a>
             </div>
             
@@ -84,6 +97,58 @@
             </div>
         </form>
     </div>
+    
+    <script>
+        document.getElementById('verifyButton').addEventListener('click', function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Validate both fields
+            if (username.length < 5) {
+                alert('Username must be at least 5 characters long');
+                return;
+            }
+            if (password.length < 5) {
+                alert('Password must be at least 5 characters long');
+                return;
+            }
+            
+            // Send verification request
+            fetch('/verify-username?username=' + encodeURIComponent(username))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.available) {
+                        // Username is available, disable both fields
+                        document.getElementById('username').disabled = true;
+                        document.getElementById('password').disabled = true;
+                        document.getElementById('verifyButton').classList.add('hidden');
+                        document.getElementById('proceedButton').classList.remove('hidden');
+                        
+                        // Set values in hidden fields for form submission
+                        document.getElementById('hiddenUsername').value = username;
+                        document.getElementById('hiddenPassword').value = password;
+                        
+                        // Show success messages
+                        document.getElementById('usernameVerifyMessage').textContent = 
+                            `The username "${username}" can be used`;
+                        document.getElementById('usernameVerifyMessage').classList.remove('hidden');
+                        document.getElementById('passwordVerifyMessage').textContent = 
+                            'Password saved successfully';
+                        document.getElementById('passwordVerifyMessage').classList.remove('hidden');
+                    } else {
+                        alert('Username is already taken');
+                    }
+                });
+        });
+
+        // Prevent form submission if verification hasn't happened
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            if (!document.getElementById('username').disabled) {
+                e.preventDefault();
+                alert('Please verify your username and password first');
+            }
+        });
+    </script>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

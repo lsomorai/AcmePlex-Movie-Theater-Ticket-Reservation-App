@@ -3,7 +3,11 @@
  */
 package com.example.movieticket.controller;
 
+import java.util.Map;
+import java.util.Collections;
+
 import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -22,6 +26,7 @@ import jakarta.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class AuthenticationController {
@@ -77,17 +82,33 @@ public class AuthenticationController {
 			return "register";
 		}
 		
-		// If all validations pass, create the user
+		// Save the user first to get the user ID
 		entity.setUserType("REGULAR");
-		userRespository.save(entity);
-		model.addAttribute("errorMessage", "Registration successful! Please login.");
-		model.addAttribute("isError", false);
-		return "index";
+		User savedUser = userRespository.save(entity);
+		
+		// Add necessary attributes for payment page
+		model.addAttribute("username", entity.getUsername());
+		model.addAttribute("amount", "20.00");
+		model.addAttribute("userid", savedUser.getId());
+		
+		return "payment";
 	}
 
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
 		session.invalidate();
 		return "redirect:/";
+	}
+
+	@GetMapping("/verify-username")
+	public @ResponseBody Map<String, Boolean> verifyUsername(@RequestParam String username) {
+		// Validate username length
+		if (username == null || username.length() < 5) {
+			return Collections.singletonMap("available", false);
+		}
+
+		// Check if username exists
+		boolean isAvailable = userRespository.findByUsername(username).isEmpty();
+		return Collections.singletonMap("available", isAvailable);
 	}
 }
