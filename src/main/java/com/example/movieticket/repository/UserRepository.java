@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.example.movieticket.entity.User;
 
 @Repository
-public interface UserRespository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.username = ?1 AND u.password=?2")
 

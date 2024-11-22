@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import com.example.movieticket.entity.Payment;
 import com.example.movieticket.repository.PaymentRespository;
 import com.example.movieticket.entity.User;
-import com.example.movieticket.repository.UserRespository;
+import com.example.movieticket.repository.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -31,7 +31,7 @@ public class PaymentController {
     private PaymentRespository paymentRespository;
     
     @Autowired
-    private UserRespository userRespository;
+    private UserRepository userRepository;
 
     @PostMapping("/RuPayment")
     @ResponseBody
@@ -44,7 +44,7 @@ public class PaymentController {
             user.setUserType("REGULAR");
             user.setExpirationDate(LocalDateTime.now().plusYears(1));
             
-            User savedUser = userRespository.save(user);
+            User savedUser = userRepository.save(user);
             
             // Then save the payment with the user ID
             payment.setUserid(savedUser.getId());

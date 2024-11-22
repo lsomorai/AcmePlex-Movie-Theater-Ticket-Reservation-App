@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.example.movieticket.entity.User;
-import com.example.movieticket.repository.UserRespository;
+import com.example.movieticket.repository.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @SessionAttributes("pendingUser")
 public class AuthenticationController {
 	@Autowired
-	private UserRespository userRespository;
+	private UserRepository userRepository;
 
 	@GetMapping("/")
 	public String showLoginPage(Model model) {
@@ -47,7 +47,7 @@ public class AuthenticationController {
 
 	@PostMapping("/login")
 	public String login(User entity, HttpSession session, Model model) {
-		List<User> users = userRespository.findByUsernamePassword(
+		List<User> users = userRepository.findByUsernamePassword(
 			entity.getUsername(),
 			entity.getPassword()
 		);
@@ -80,7 +80,7 @@ public class AuthenticationController {
 		}
 
 		// Check if username already exists
-		if (userRespository.findByUsername(entity.getUsername()).size() > 0) {
+		if (userRepository.findByUsername(entity.getUsername()).size() > 0) {
 			model.addAttribute("errorMessage", "Username already exists");
 			model.addAttribute("isError", true);
 			return "register";
@@ -113,7 +113,7 @@ public class AuthenticationController {
 		}
 
 		// Check if username exists
-		boolean isAvailable = userRespository.findByUsername(username).isEmpty();
+		boolean isAvailable = userRepository.findByUsername(username).isEmpty();
 		return Collections.singletonMap("available", isAvailable);
 	}
 
