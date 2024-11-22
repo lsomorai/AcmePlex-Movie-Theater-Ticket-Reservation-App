@@ -25,7 +25,7 @@ public class TicketPaymentService {
     @Transactional
     public String processTicketPayment(PaymentRequest paymentRequest, Integer userId) {
         try {
-            // Save payment
+            // Save payment first to get the payment ID
             Payment payment = new Payment();
             payment.setCardnumber(paymentRequest.getCardnumber());
             payment.setCardname(paymentRequest.getCardname());
@@ -35,14 +35,15 @@ public class TicketPaymentService {
             payment.setUserid(userId);
             payment.setNote("TICKET_PURCHASE");
             
-            System.out.println("Saving payment for user: " + userId); // Add logging
-            paymentRepository.save(payment);
+            System.out.println("Saving payment for user: " + userId);
+            Payment savedPayment = paymentRepository.save(payment);
+            Long paymentId = savedPayment.getId();
 
             String lastReferenceNumber = null;
-            // Create tickets
+            // Create tickets with payment ID
             String[] seatIds = paymentRequest.getSelectedSeats().split(",");
             for (String seatId : seatIds) {
-                System.out.println("Processing seat: " + seatId); // Add logging
+                System.out.println("Processing seat: " + seatId);
                 Seat seat = seatRepository.findById(Long.parseLong(seatId))
                     .orElseThrow(() -> new RuntimeException("Seat not found: " + seatId));
                 
@@ -50,6 +51,7 @@ public class TicketPaymentService {
                 ticket.setUserId(userId);
                 ticket.setMovieId(seat.getShowtime().getMovie().getId());
                 ticket.setSeatId(seat.getId());
+                ticket.setPaymentId(paymentId);  // Set the payment ID
                 ticket.setPurchaseDate(LocalDateTime.now());
                 ticket.setStatus(TicketStatus.ACTIVE);
                 ticket.setIsRefundable(true);
@@ -57,17 +59,17 @@ public class TicketPaymentService {
                 ticket.setReferenceNumber(referenceNumber);
                 lastReferenceNumber = referenceNumber;
                 
-                System.out.println("Saving ticket with reference: " + ticket.getReferenceNumber()); // Add logging
+                System.out.println("Saving ticket with reference: " + ticket.getReferenceNumber());
                 ticketRepository.save(ticket);
                 
                 // Update seat status
                 seat.setStatus("BOOKED");
                 seatRepository.save(seat);
             }
-            return lastReferenceNumber; // Return the last reference number
+            return lastReferenceNumber;
         } catch (Exception e) {
-            System.out.println("Error in processTicketPayment: " + e.getMessage()); // Add logging
-            throw e; // Re-throw to trigger transaction rollback
+            System.out.println("Error in processTicketPayment: " + e.getMessage());
+            throw e;
         }
     }
 

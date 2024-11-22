@@ -26,6 +26,9 @@ public class Ticket {
     @Column(name = "seat_id", nullable = false)
     private Long seatId;
 
+    @Column(name = "payment_id")
+    private Long paymentId;
+
     @Column(name = "purchase_date", nullable = false)
     private LocalDateTime purchaseDate;
 
@@ -53,6 +56,14 @@ public class Ticket {
 
     public void setIsRefundable(boolean isRefundable) {
         this.isRefundable = isRefundable;
+    }
+
+    public Long getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(Long paymentId) {
+        this.paymentId = paymentId;
     }
 
 }
