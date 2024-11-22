@@ -54,7 +54,7 @@ public class AuthenticationController {
 
 		if (!users.isEmpty()) {
 			session.setAttribute("username", users.get(0).getUsername());
-			return "redirect:/theatres";
+			return "redirect:/dashboard";
 		} else {
 			model.addAttribute("user", new User());
 			model.addAttribute("errorMessage", "Invalid username or password");
@@ -120,5 +120,25 @@ public class AuthenticationController {
 	@ModelAttribute("pendingUser")
 	public User pendingUser() {
 		return new User();
+	}
+
+	@GetMapping("/dashboard")
+	public String showDashboard(Model model, HttpSession session, @RequestParam(required = false) Boolean guest) {
+		String username = (String) session.getAttribute("username");
+		
+		// Handle guest access
+		if (guest != null && guest) {
+			model.addAttribute("displayName", "Ordinary User");
+			session.setAttribute("username", "Ordinary User");
+			return "dashboard";
+		}
+		
+		// Handle regular user access
+		if (username == null) {
+			return "redirect:/";  // Redirect to login if not logged in and not guest
+		}
+		
+		model.addAttribute("displayName", username);
+		return "dashboard";
 	}
 }
