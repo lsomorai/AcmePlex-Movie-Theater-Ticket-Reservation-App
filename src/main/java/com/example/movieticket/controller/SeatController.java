@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class SeatController {
@@ -19,7 +20,7 @@ public class SeatController {
     private SeatRepository seatRepository;
 
     @GetMapping("/showtimes/{showtimeId}/seats")
-    public String showSeats(@PathVariable Long showtimeId, Model model) {
+    public String showSeats(@PathVariable Long showtimeId, Model model, HttpSession session) {
         List<Seat> seats = seatRepository.findByShowtimeId(showtimeId);
         
         Map<String, List<Seat>> seatsByRow = new TreeMap<>();
@@ -30,6 +31,10 @@ public class SeatController {
         
         model.addAttribute("showtimeId", showtimeId);
         model.addAttribute("seatsByRow", seatsByRow);
+        
+        String username = (String) session.getAttribute("username");
+        model.addAttribute("displayName", username != null ? username : "Ordinary User");
+        
         return "seats";
     }
 } 

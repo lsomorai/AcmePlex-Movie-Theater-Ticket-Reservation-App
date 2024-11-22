@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class MovieController {
@@ -19,9 +20,13 @@ public class MovieController {
     private TheatreRepository theatreRepository;
 
     @GetMapping("/theatres/{theatreId}/movies")
-    public String listMoviesByTheatre(@PathVariable Long theatreId, Model model) {
+    public String showMovies(@PathVariable Long theatreId, Model model, HttpSession session) {
         model.addAttribute("movies", movieRepository.findMoviesByTheatreId(theatreId));
         model.addAttribute("theatre", theatreRepository.findById(theatreId).orElse(null));
+        
+        String username = (String) session.getAttribute("username");
+        model.addAttribute("displayName", username != null ? username : "Ordinary User");
+        
         return "movies";
     }
 
