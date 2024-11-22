@@ -79,6 +79,16 @@
                         <p><strong>Seat:</strong> <span id="seatNumber"></span></p>
                         <p><strong>Purchase Date:</strong> <span id="purchaseDate"></span></p>
                         <p><strong>Status:</strong> <span id="ticketStatus"></span></p>
+                        <div id="refundInfo" class="alert alert-info mt-3">
+                            <p id="refundableStatus"></p>
+                            <p id="refundPolicy" style="display: none;">
+                                As an Ordinary User, you will receive:
+                                <ul>
+                                    <li>85% of the ticket price as immediate refund</li>
+                                    <li>A credit code worth 15% of the ticket price, valid for one year</li>
+                                </ul>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,12 +130,25 @@
                             // Show ticket details section
                             $('#ticketDetails').show();
                             
-                            // Show/hide buttons based on refundability
+                            // Show refund status message
+                            if (response.isRefundable) {
+                                $('#refundableStatus').text('This ticket is eligible for cancellation (more than 72 hours before show time).');
+                                $('#refundPolicy').show();
+                            } else {
+                                $('#refundableStatus').text('This ticket is not eligible for cancellation (less than 72 hours before show time).');
+                                $('#refundPolicy').hide();
+                            }
+                            
+                            // Show/hide buttons based on refundability and status
                             if (response.isRefundable && response.status === 'ACTIVE') {
                                 $('#cancelButton').show();
                                 $('#searchButton').hide();
                             } else {
-                                $('#resultMessage').html('<div class="alert alert-warning">This ticket is not eligible for cancellation.</div>');
+                                $('#cancelButton').hide();
+                                $('#searchButton').show();
+                                if (response.status !== 'ACTIVE') {
+                                    $('#resultMessage').html('<div class="alert alert-warning">This ticket has already been ' + response.status.toLowerCase() + '.</div>');
+                                }
                             }
                         }
                     },

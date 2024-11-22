@@ -139,6 +139,7 @@ public class AuthenticationController {
 		if (guest != null && guest) {
 			model.addAttribute("displayName", "Ordinary User");
 			session.setAttribute("username", "Ordinary User");
+			session.setAttribute("userId", 1);
 			return "dashboard";
 		}
 		

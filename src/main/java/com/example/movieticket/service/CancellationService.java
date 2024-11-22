@@ -40,20 +40,25 @@ public class CancellationService {
         Ticket actualTicket = ticket.get();
         logger.info("Ticket found: {}", actualTicket);
 
-        // Check if the ticket is eligible for cancellation
-        if (!actualTicket.getIsRefundable() || actualTicket.getPurchaseDate().isBefore(LocalDateTime.now().minusHours(72))) {
-            logger.error("Ticket is not refundable or not eligible for cancellation (purchased too late).");
+        // Get show datetime to check 72-hour rule
+        Seat seat = seatRepository.findById(actualTicket.getSeatId())
+            .orElseThrow(() -> new IllegalArgumentException("Seat not found for this ticket"));
+        
+        Showtime showtime = seat.getShowtime();
+        LocalDateTime showDateTime = showtime.getDate().atTime(
+            showtime.getSession() == 1 ? 10 : 
+            showtime.getSession() == 2 ? 14 : 19, 
+            0  // minutes
+        );
+
+        // Check if ticket is eligible for cancellation
+        if (!LocalDateTime.now().plusHours(72).isBefore(showDateTime)) {
+            logger.error("Ticket is not eligible for cancellation (less than 72 hours before show time).");
             throw new TicketNotRefundableException("Sorry, you are not eligible to cancel this ticket. " +
                     "Cancellation is only allowed up to 72 hours before the show.");
         }
 
-        // Fetch the seat to retrieve the price
-        Optional<Seat> seat = seatRepository.findById(actualTicket.getSeatId());
-        if (seat.isEmpty()) {
-            logger.error("Seat not found for ticket with ID: {}", actualTicket.getSeatId());
-            throw new IllegalArgumentException("Seat not found for this ticket");
-        }
-        Double seatPrice = seat.get().getPrice();
+        Double seatPrice = seat.getPrice();
 
         // Update ticket status
         actualTicket.setStatus(TicketStatus.CANCELED);
@@ -89,8 +94,16 @@ public class CancellationService {
             .orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
 
         // Verify the ticket belongs to the current user
-        if (!ticket.getUserId().equals(currentUserId)) {
-            throw new RuntimeException("You are not authorized to view this ticket");
+        // For guest users (currentUserId = 1), only show tickets with userId = 1
+        if (currentUserId == 1) {
+            if (ticket.getUserId() != 1) {
+                throw new RuntimeException("You are not authorized to view this ticket");
+            }
+        } else {
+            // For registered users, verify the ticket belongs to them
+            if (!ticket.getUserId().equals(currentUserId)) {
+                throw new RuntimeException("You are not authorized to view this ticket");
+            }
         }
 
         // Get associated seat and movie details
@@ -100,6 +113,17 @@ public class CancellationService {
         Showtime showtime = seat.getShowtime();
         Movie movie = showtime.getMovie();
 
+        // Calculate show datetime
+        LocalDateTime showDateTime = showtime.getDate().atTime(
+            showtime.getSession() == 1 ? 10 : 
+            showtime.getSession() == 2 ? 14 : 19, 
+            0  // minutes
+        );
+
+        // Check if more than 72 hours before show time
+        boolean isRefundable = LocalDateTime.now().plusHours(72).isBefore(showDateTime) 
+                              && ticket.getStatus() == TicketStatus.ACTIVE;
+
         Map<String, Object> details = new HashMap<>();
         details.put("success", true);
         details.put("movieTitle", movie.getTitle());
@@ -108,7 +132,7 @@ public class CancellationService {
                                showtime.getSession() == 2 ? "2:00 PM" : "7:00 PM");
         details.put("seatNumber", seat.getSeatRow() + seat.getSeatNumber());
         details.put("purchaseDate", ticket.getPurchaseDate().toString());
-        details.put("isRefundable", ticket.getIsRefundable());
+        details.put("isRefundable", isRefundable);
         details.put("status", ticket.getStatus().toString());
         
         return details;
