@@ -32,10 +32,38 @@
             font-weight: bold;
             margin-bottom: 1rem;
         }
+        .navbar {
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .user-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .username {
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/theatres">Movie Ticket Reservation</a>
+                <div class="user-info">
+                    <span class="username" th:text="${displayName}">Username</span>
+                    <th:block th:if="${displayName != 'Guest User'}">
+                        <a href="/logout" class="btn btn-outline-secondary btn-sm">Logout</a>
+                    </th:block>
+                    <th:block th:if="${displayName == 'Guest User'}">
+                        <a href="/" class="btn btn-outline-primary btn-sm">Login</a>
+                    </th:block>
+                </div>
+            </div>
+        </nav>
+
         <h1 class="text-center my-4">Our Theatres</h1>
         
         <div class="theatres-container">

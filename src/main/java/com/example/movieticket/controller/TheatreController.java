@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.example.movieticket.entity.Theatre;
 import com.example.movieticket.repository.TheatreRepository;
 import java.util.List;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class TheatreController {
@@ -15,9 +16,14 @@ public class TheatreController {
     private TheatreRepository theatreRepository;
 
     @GetMapping("/theatres")
-    public String showTheatres(Model model) {
+    public String showTheatres(Model model, HttpSession session) {
         List<Theatre> theatres = theatreRepository.findAll();
         model.addAttribute("theatres", theatres);
+        
+        // Get username from session or set as Guest User
+        String username = (String) session.getAttribute("username");
+        model.addAttribute("displayName", username != null ? username : "Guest User");
+        
         return "theatres";
     }
 } 
