@@ -51,5 +51,8 @@ public class Ticket {
         this.status = status;
     }
 
+    public void setIsRefundable(boolean isRefundable) {
+        this.isRefundable = isRefundable;
+    }
 
 }

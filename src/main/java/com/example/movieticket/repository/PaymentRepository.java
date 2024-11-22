@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import com.example.movieticket.entity.Payment;
 
 @Repository
-public interface PaymentRespository extends JpaRepository<Payment, Long> {
+public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("SELECT p FROM Payment p WHERE p.cardnumber = ?1 AND p.cardname=?2")
     List<Payment> findByCardNumberCardHolderName(String cardnumber, String cardname);

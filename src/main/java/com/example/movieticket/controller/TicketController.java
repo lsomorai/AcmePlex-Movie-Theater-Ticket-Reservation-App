@@ -49,6 +49,7 @@ public class TicketController {
         String username = (String) session.getAttribute("username");
         model.addAttribute("displayName", username != null ? username : "Ordinary User");
         
-        return "ticket-confirmation";
+        // Instead of returning ticket-confirmation, redirect to payment
+        return "redirect:/ticket-payment?showtimeId=" + showtimeId + "&selectedSeats=" + selectedSeats;
     }
 } 

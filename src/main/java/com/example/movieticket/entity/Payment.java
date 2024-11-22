@@ -26,7 +26,7 @@ public class Payment {
     private String cardname;
     private String expirydate;
     private String cvv;
-    private String amount;
+    private double amount;
     private int userid;
     private String note;
 
@@ -34,7 +34,7 @@ public class Payment {
     }
 
     public Payment(Long id, String cardnumber, String cardname, String expirydate, String cvv, int userid,
-            String amount, String note) {
+            double amount, String note) {
         this.id = id;
         this.cardnumber = cardnumber;
         this.cardname = cardname;
@@ -85,11 +85,11 @@ public class Payment {
         this.cvv = cvv;
     }
 
-    public String getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
