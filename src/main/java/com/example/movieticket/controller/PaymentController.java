@@ -1,6 +1,7 @@
 package com.example.movieticket.controller;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -21,20 +22,44 @@ import jakarta.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
+@SessionAttributes("pendingUser")
 public class PaymentController {
-    // create a new controller with post method and get payment details from
-    // payment.html and insert into payment table,return ture if payment is
-    // successful to singup.html
     @Autowired
     private PaymentRespository paymentRespository;
+    
+    @Autowired
+    private UserRespository userRespository;
 
     @PostMapping("/RuPayment")
-    public String signup(Payment entity, HttpSession session, Model model) {
-        paymentRespository.save(entity);
-        model.addAttribute("successMessage", "Payment Successful");
-        model.addAttribute("errorMessage", "sucessful registered a new RUs user!");
-        return "/register";
+    @ResponseBody
+    public String processPayment(@RequestBody Payment payment, @ModelAttribute("pendingUser") User pendingUser) {
+        try {
+            // Create a new User instance with the pending user's data
+            User user = new User();
+            user.setUsername(pendingUser.getUsername());
+            user.setPassword(pendingUser.getPassword());
+            user.setUserType("REGULAR");
+            user.setExpirationDate(LocalDateTime.now().plusYears(1));
+            
+            User savedUser = userRespository.save(user);
+            
+            // Then save the payment with the user ID
+            payment.setUserid(savedUser.getId());
+            payment.setNote("REGISTRY");
+            
+            if (payment.getAmount() != null && payment.getAmount().length() > 0) {
+                String amountStr = payment.getAmount().toString().replace("$", "");
+                payment.setAmount(amountStr);
+            }
+            paymentRespository.save(payment);
+            
+            return "success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error";
+        }
     }
 }

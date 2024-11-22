@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import lombok.NonNull;
 import jakarta.persistence.Table;
 import lombok.Data;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -21,6 +22,7 @@ public class User {
     private String username;
     private String password;
     private String usertype;
+    private LocalDateTime expirationDate;
 
     public User(String username, String password) {
         this.username = username;
@@ -75,5 +77,13 @@ public class User {
 
     public void setUserType(String usertype) {
         this.usertype = usertype;
+    }
+
+    public LocalDateTime getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(LocalDateTime expirationDate) {
+        this.expirationDate = expirationDate;
     }
 }

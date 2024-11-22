@@ -21,34 +21,36 @@ import lombok.Data;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int paymentid;
+    private Long id;
     private String cardnumber;
     private String cardname;
     private String expirydate;
-    private int cvv;
+    private String cvv;
+    private String amount;
     private int userid;
-    private double amount;
+    private String note;
 
     public Payment() {
     }
 
-    public Payment(int paymentid, String cardnumber, String cardname, String expirydate, int cvv, int userid,
-            double amount) {
-        this.paymentid = paymentid;
+    public Payment(Long id, String cardnumber, String cardname, String expirydate, String cvv, int userid,
+            String amount, String note) {
+        this.id = id;
         this.cardnumber = cardnumber;
         this.cardname = cardname;
         this.expirydate = expirydate;
         this.cvv = cvv;
         this.userid = userid;
         this.amount = amount;
+        this.note = note;
     }
 
-    public int getPaymentid() {
-        return paymentid;
+    public Long getId() {
+        return id;
     }
 
-    public void setPaymentid(int paymentid) {
-        this.paymentid = paymentid;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getCardnumber() {
@@ -75,19 +77,19 @@ public class Payment {
         this.expirydate = expirydate;
     }
 
-    public int getCvv() {
+    public String getCvv() {
         return cvv;
     }
 
-    public void setCvv(int cvv) {
+    public void setCvv(String cvv) {
         this.cvv = cvv;
     }
 
-    public double getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(String amount) {
         this.amount = amount;
     }
 
@@ -97,6 +99,14 @@ public class Payment {
 
     public void setUserid(int userid) {
         this.userid = userid;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
 }

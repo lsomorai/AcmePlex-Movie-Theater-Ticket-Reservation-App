@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
+@SessionAttributes("pendingUser")
 public class AuthenticationController {
 	@Autowired
 	private UserRespository userRespository;
@@ -82,14 +83,15 @@ public class AuthenticationController {
 			return "register";
 		}
 		
-		// Save the user first to get the user ID
-		entity.setUserType("REGULAR");
-		User savedUser = userRespository.save(entity);
+		// Store complete user object in model
+		User pendingUser = new User();
+		pendingUser.setUsername(entity.getUsername());
+		pendingUser.setPassword(entity.getPassword());
+		pendingUser.setUserType("REGULAR");
 		
-		// Add necessary attributes for payment page
+		model.addAttribute("pendingUser", pendingUser);
 		model.addAttribute("username", entity.getUsername());
 		model.addAttribute("amount", "20.00");
-		model.addAttribute("userid", savedUser.getId());
 		
 		return "payment";
 	}
@@ -110,5 +112,10 @@ public class AuthenticationController {
 		// Check if username exists
 		boolean isAvailable = userRespository.findByUsername(username).isEmpty();
 		return Collections.singletonMap("available", isAvailable);
+	}
+
+	@ModelAttribute("pendingUser")
+	public User pendingUser() {
+		return new User();
 	}
 }
