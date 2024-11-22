@@ -145,7 +145,8 @@
             </div>
             
             <div class="text-center mt-4">
-                <button class="btn btn-primary">Confirm Booking</button>
+                <a th:href="@{/ticket-payment(showtimeId=${showtime.id},selectedSeats=${selectedSeatsString})}" 
+                   class="btn btn-primary">Pay for Your Ticket</a>
                 <a th:href="@{/showtimes/{id}/seats(id=${showtime.id})}" class="btn btn-secondary">Back</a>
             </div>
         </div>

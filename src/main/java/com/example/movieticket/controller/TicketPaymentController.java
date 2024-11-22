@@ -41,6 +41,12 @@ public class TicketPaymentController {
                                .mapToDouble(Seat::getPrice)
                                .sum();
 
+        // Get username from session
+        String username = (String) session.getAttribute("username");
+        String displayName = username != null ? username : "Ordinary User";
+        
+        // Add attributes
+        model.addAttribute("displayName", displayName);
         model.addAttribute("showtime", showtime);
         model.addAttribute("seats", seats);
         model.addAttribute("totalPrice", totalPrice);

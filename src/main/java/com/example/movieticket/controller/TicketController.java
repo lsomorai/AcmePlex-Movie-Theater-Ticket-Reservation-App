@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.movieticket.entity.Seat;
 import com.example.movieticket.entity.Showtime;
 import com.example.movieticket.repository.SeatRepository;
+import com.example.movieticket.repository.ShowtimeRepository;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.Arrays;
@@ -19,37 +20,38 @@ import java.util.stream.Collectors;
 public class TicketController {
 
     @Autowired
+    private ShowtimeRepository showtimeRepository;
+    
+    @Autowired
     private SeatRepository seatRepository;
     
-    @PostMapping("/showtimes/{showtimeId}/book")
-    public String showTicketConfirmation(@PathVariable Long showtimeId,
-                                       @RequestParam String selectedSeats,
+    @PostMapping("/ticket-confirmation")
+    public String showTicketConfirmation(@RequestParam("selectedSeats") String selectedSeats,
+                                       @RequestParam("showtimeId") Long showtimeId,
                                        Model model,
                                        HttpSession session) {
-        // Get selected seats
-        List<Long> seatIds = Arrays.stream(selectedSeats.split(","))
-                                  .map(Long::parseLong)
-                                  .collect(Collectors.toList());
-        List<Seat> seats = seatRepository.findAllById(seatIds);
+        // Get showtime and seats
+        Showtime showtime = showtimeRepository.findById(showtimeId).orElseThrow();
+        List<Seat> seats = Arrays.stream(selectedSeats.split(","))
+                               .map(Long::parseLong)
+                               .map(id -> seatRepository.findById(id).orElseThrow())
+                               .collect(Collectors.toList());
         
-        // Get showtime details (first seat's showtime contains all needed info)
-        Showtime showtime = seats.get(0).getShowtime();
-        
-        // Calculate total price
         double totalPrice = seats.stream()
                                .mapToDouble(Seat::getPrice)
                                .sum();
+
+        // Get username from session (matching SeatController)
+        String username = (String) session.getAttribute("username");
+        String displayName = username != null ? username : "Ordinary User";
         
         // Add attributes to model
-        model.addAttribute("seats", seats);
+        model.addAttribute("displayName", displayName);
         model.addAttribute("showtime", showtime);
+        model.addAttribute("seats", seats);
         model.addAttribute("totalPrice", totalPrice);
+        model.addAttribute("selectedSeatsString", selectedSeats);
         
-        // Add username display
-        String username = (String) session.getAttribute("username");
-        model.addAttribute("displayName", username != null ? username : "Ordinary User");
-        
-        // Instead of returning ticket-confirmation, redirect to payment
-        return "redirect:/ticket-payment?showtimeId=" + showtimeId + "&selectedSeats=" + selectedSeats;
+        return "ticket-confirmation";
     }
 } 

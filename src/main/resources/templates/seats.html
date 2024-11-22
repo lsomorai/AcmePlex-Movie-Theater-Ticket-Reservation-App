@@ -107,7 +107,7 @@
                 </div>
             </div>
         </nav>
-        <form th:action="@{/showtimes/{showtimeId}/book(showtimeId=${showtimeId})}" method="post" id="seatForm">
+        <form th:action="@{/ticket-confirmation}" method="post" id="seatForm">
             <div class="seat-container">
                 <div class="screen">SCREEN</div>
                 
@@ -138,6 +138,7 @@
 
             <div class="text-center mt-4">
                 <input type="hidden" name="selectedSeats" id="selectedSeatsInput"/>
+                <input type="hidden" name="showtimeId" th:value="${showtimeId}"/>
                 <button type="submit" class="btn btn-primary" id="bookButton">Book Selected Seats</button>
                 <a th:href="@{/showtimes}" class="btn btn-secondary">Back</a>
             </div>
