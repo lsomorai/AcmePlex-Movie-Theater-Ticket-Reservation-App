@@ -61,10 +61,28 @@
                        name="bookingReference" placeholder="Enter your booking reference" required>
             </div>
             <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Cancel Ticket</button>
+                <button type="button" id="searchButton" class="btn btn-primary">Search for Ticket</button>
+                <button type="submit" id="cancelButton" class="btn btn-danger" style="display: none;">Cancel Ticket</button>
                 <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
             </div>
         </form>
+
+        <!-- Ticket Details Section (initially hidden) -->
+        <div id="ticketDetails" class="mt-4" style="display: none;">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Ticket Details</h5>
+                    <div class="ticket-info">
+                        <p><strong>Movie:</strong> <span id="movieTitle"></span></p>
+                        <p><strong>Show Date:</strong> <span id="showDate"></span></p>
+                        <p><strong>Show Time:</strong> <span id="showTime"></span></p>
+                        <p><strong>Seat:</strong> <span id="seatNumber"></span></p>
+                        <p><strong>Purchase Date:</strong> <span id="purchaseDate"></span></p>
+                        <p><strong>Status:</strong> <span id="ticketStatus"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Result message -->
         <div id="resultMessage" class="mt-4"></div>
@@ -72,7 +90,54 @@
 
     <script>
         $(document).ready(function () {
-            $('#cancellation-form').submit(function (e) {
+            // Search button click handler
+            $('#searchButton').click(function() {
+                var bookingReference = $('#bookingReference').val();
+
+                if (!bookingReference) {
+                    alert("Please enter a booking reference.");
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/cancellation/search-ticket',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ "bookingReference": bookingReference }),
+                    success: function(response) {
+                        if (response.success) {
+                            // Show ticket details
+                            $('#movieTitle').text(response.movieTitle);
+                            $('#showDate').text(response.showDate);
+                            $('#showTime').text(response.showTime);
+                            $('#seatNumber').text(response.seatNumber);
+                            $('#purchaseDate').text(response.purchaseDate);
+                            $('#ticketStatus').text(response.status);
+                            
+                            // Show ticket details section
+                            $('#ticketDetails').show();
+                            
+                            // Show/hide buttons based on refundability
+                            if (response.isRefundable && response.status === 'ACTIVE') {
+                                $('#cancelButton').show();
+                                $('#searchButton').hide();
+                            } else {
+                                $('#resultMessage').html('<div class="alert alert-warning">This ticket is not eligible for cancellation.</div>');
+                            }
+                        }
+                    },
+                    error: function(xhr) {
+                        var message = xhr.responseJSON ? xhr.responseJSON.message : 'An error occurred. Please try again later.';
+                        $('#resultMessage').html('<div class="alert alert-danger">' + message + '</div>');
+                        $('#ticketDetails').hide();
+                        $('#cancelButton').hide();
+                        $('#searchButton').show();
+                    }
+                });
+            });
+
+            // Cancel button click handler (keep your existing cancel functionality)
+            $('#cancellation-form').submit(function(e) {
                 e.preventDefault();
 
                 var bookingReference = $('#bookingReference').val();

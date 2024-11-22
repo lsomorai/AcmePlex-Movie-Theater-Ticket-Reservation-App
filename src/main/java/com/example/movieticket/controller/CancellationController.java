@@ -70,4 +70,34 @@ public class CancellationController {
             ));
         }
     }
+
+    @PostMapping("/search-ticket")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> searchTicket(@RequestBody Map<String, String> requestBody, 
+                                                            HttpSession session) {
+        String bookingReference = requestBody.get("bookingReference");
+        Integer currentUserId = (Integer) session.getAttribute("userId");
+        String username = (String) session.getAttribute("username");
+        
+        // For guest user (Ordinary User), set userId to 1
+        if (username != null && username.equals("Ordinary User")) {
+            currentUserId = 1;
+        }
+
+        try {
+            // Get ticket details from service
+            Map<String, Object> ticketDetails = cancellationService.getTicketDetails(bookingReference, currentUserId);
+            return ResponseEntity.ok(ticketDetails);
+        } catch (TicketNotFoundException e) {
+            return ResponseEntity.status(404).body(Map.of(
+                "success", false,
+                "message", "Ticket not found with this reference number."
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(Map.of(
+                "success", false,
+                "message", "Error: " + e.getMessage()
+            ));
+        }
+    }
 }

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -80,5 +82,35 @@ public class CancellationService {
             logger.info("Generated credit code for ordinary user: {}", credit.getCreditCode());
             return "Your ticket has been canceled successfully. Your credit code is: " + credit.getCreditCode();
         }
+    }
+
+    public Map<String, Object> getTicketDetails(String referenceNumber, Integer currentUserId) {
+        Ticket ticket = ticketRepository.findByReferenceNumber(referenceNumber)
+            .orElseThrow(() -> new TicketNotFoundException("Ticket not found"));
+
+        // Verify the ticket belongs to the current user
+        if (!ticket.getUserId().equals(currentUserId)) {
+            throw new RuntimeException("You are not authorized to view this ticket");
+        }
+
+        // Get associated seat and movie details
+        Seat seat = seatRepository.findById(ticket.getSeatId())
+            .orElseThrow(() -> new RuntimeException("Seat not found"));
+        
+        Showtime showtime = seat.getShowtime();
+        Movie movie = showtime.getMovie();
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("success", true);
+        details.put("movieTitle", movie.getTitle());
+        details.put("showDate", showtime.getDate().toString());
+        details.put("showTime", showtime.getSession() == 1 ? "10:00 AM" : 
+                               showtime.getSession() == 2 ? "2:00 PM" : "7:00 PM");
+        details.put("seatNumber", seat.getSeatRow() + seat.getSeatNumber());
+        details.put("purchaseDate", ticket.getPurchaseDate().toString());
+        details.put("isRefundable", ticket.getIsRefundable());
+        details.put("status", ticket.getStatus().toString());
+        
+        return details;
     }
 }
