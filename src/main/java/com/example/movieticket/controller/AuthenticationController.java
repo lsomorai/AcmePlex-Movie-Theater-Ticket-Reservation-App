@@ -35,7 +35,8 @@ public class AuthenticationController {
 	private UserRespository userRespository;
 
 	@GetMapping("/")
-	public String showLoginPage() {
+	public String showLoginPage(Model model) {
+		model.addAttribute("user", new User());
 		return "index";
 	}
 
@@ -55,7 +56,9 @@ public class AuthenticationController {
 			session.setAttribute("username", users.get(0).getUsername());
 			return "redirect:/theatres";
 		} else {
+			model.addAttribute("user", new User());
 			model.addAttribute("errorMessage", "Invalid username or password");
+			model.addAttribute("isError", true);
 			return "index";
 		}
 	}
