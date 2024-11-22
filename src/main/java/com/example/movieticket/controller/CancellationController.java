@@ -4,11 +4,13 @@ import com.example.movieticket.service.CancellationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.example.movieticket.exception.TicketNotRefundableException;
 import com.example.movieticket.exception.TicketNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+import jakarta.servlet.http.HttpSession;
 
 @Controller  // For serving HTML pages
 @RequestMapping("/cancellation")  // Base URL for cancellation
@@ -19,7 +21,10 @@ public class CancellationController {
 
     // This is the GET method to show the cancellation page
     @GetMapping("/cancel-ticket")
-    public String showCancellationPage() {
+    public String showCancellationPage(Model model, HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        String displayName = username != null ? username : "Ordinary User";
+        model.addAttribute("displayName", displayName);
         return "cancellation";
     }
 
