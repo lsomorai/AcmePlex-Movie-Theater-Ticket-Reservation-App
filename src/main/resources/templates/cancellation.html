@@ -105,6 +105,9 @@
                     contentType: 'application/json',
                     data: JSON.stringify({ "bookingReference": bookingReference }),
                     success: function(response) {
+                        // Clear any existing messages first
+                        $('#resultMessage').empty();
+                        
                         if (response.success) {
                             // Show ticket details
                             $('#movieTitle').text(response.movieTitle);
@@ -127,16 +130,20 @@
                         }
                     },
                     error: function(xhr) {
-                        var message = xhr.responseJSON ? xhr.responseJSON.message : 'An error occurred. Please try again later.';
-                        $('#resultMessage').html('<div class="alert alert-danger">' + message + '</div>');
+                        // Clear ticket details and hide the section
                         $('#ticketDetails').hide();
                         $('#cancelButton').hide();
                         $('#searchButton').show();
+                        
+                        // Clear any existing messages before showing the error
+                        $('#resultMessage').empty();
+                        var message = xhr.responseJSON ? xhr.responseJSON.message : 'An error occurred. Please try again later.';
+                        $('#resultMessage').html('<div class="alert alert-danger">' + message + '</div>');
                     }
                 });
             });
 
-            // Cancel button click handler (keep your existing cancel functionality)
+            // Cancel button click handler
             $('#cancellation-form').submit(function(e) {
                 e.preventDefault();
 
@@ -153,13 +160,22 @@
                     contentType: 'application/json',
                     data: JSON.stringify({ "bookingReference": bookingReference }),
                     success: function (response) {
+                        // Clear any existing messages first
+                        $('#resultMessage').empty();
+                        
                         if (response.success) {
                             $('#resultMessage').html('<div class="alert alert-success">' + response.message + '</div>');
+                            // Hide the ticket details and cancel button after successful cancellation
+                            $('#ticketDetails').hide();
+                            $('#cancelButton').hide();
+                            $('#searchButton').show();
                         } else {
                             $('#resultMessage').html('<div class="alert alert-danger">' + response.message + '</div>');
                         }
                     },
                     error: function (xhr) {
+                        // Clear any existing messages first
+                        $('#resultMessage').empty();
                         var message = xhr.responseJSON ? xhr.responseJSON.message : 'An error occurred. Please try again later.';
                         $('#resultMessage').html('<div class="alert alert-danger">' + message + '</div>');
                     }
