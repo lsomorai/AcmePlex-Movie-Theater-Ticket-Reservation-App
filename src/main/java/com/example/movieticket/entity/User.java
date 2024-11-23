@@ -11,6 +11,7 @@ import lombok.NonNull;
 import jakarta.persistence.Table;
 import lombok.Data;
 import java.time.LocalDateTime;
+import jakarta.persistence.Column;
 
 @Entity
 @Table(name = "users")
@@ -23,6 +24,9 @@ public class User {
     private String password;
     private String usertype;
     private LocalDateTime expirationDate;
+    
+    @Column(nullable = true)  // Explicitly allow null values
+    private String email;
 
     public User(String username, String password) {
         this.username = username;
@@ -85,5 +89,13 @@ public class User {
 
     public void setExpirationDate(LocalDateTime expirationDate) {
         this.expirationDate = expirationDate;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

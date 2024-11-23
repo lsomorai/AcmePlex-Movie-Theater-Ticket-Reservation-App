@@ -44,6 +44,10 @@ public class PaymentController {
             user.setUserType("REGULAR");
             user.setExpirationDate(LocalDateTime.now().plusYears(1));
             
+            // Generate and set email address
+            String email = pendingUser.getUsername() + "@ensf614.com";
+            user.setEmail(email);
+            
             User savedUser = userRepository.save(user);
             
             // Then save the payment with the user ID
