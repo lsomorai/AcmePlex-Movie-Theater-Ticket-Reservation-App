@@ -1,6 +1,8 @@
 package com.example.movieticket.controller;
 
 import com.example.movieticket.service.CancellationService;
+import com.example.movieticket.repository.UserRepository;
+import com.example.movieticket.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -11,6 +13,7 @@ import com.example.movieticket.exception.TicketNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller  // For serving HTML pages
 @RequestMapping("/cancellation")  // Base URL for cancellation
@@ -18,6 +21,7 @@ import jakarta.servlet.http.HttpSession;
 public class CancellationController {
 
     private final CancellationService cancellationService;
+    private final UserRepository userRepository;
 
     // This is the GET method to show the cancellation page
     @GetMapping("/cancel-ticket")
@@ -25,6 +29,15 @@ public class CancellationController {
         String username = (String) session.getAttribute("username");
         String displayName = username != null ? username : "Ordinary User";
         model.addAttribute("displayName", displayName);
+        
+        // Add email for registered users
+        if (username != null && !username.equals("Ordinary User")) {
+            List<User> users = userRepository.findByUsername(username);
+            if (!users.isEmpty() && users.get(0).getEmail() != null) {
+                model.addAttribute("userEmail", users.get(0).getEmail());
+            }
+        }
+        
         return "cancellation";
     }
 

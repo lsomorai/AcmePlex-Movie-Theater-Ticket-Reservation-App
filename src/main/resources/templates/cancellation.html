@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Cancel Movie Ticket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
@@ -32,6 +33,28 @@
         }
         .form-group {
             margin-bottom: 1.5rem;
+        }
+        .guest-email-form {
+            max-width: 400px;
+            margin: 1rem 0;
+        }
+        
+        .email-input-container {
+            margin-bottom: 1rem;
+        }
+        
+        .email-sent-notification {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            margin: 1rem 0;
+        }
+        
+        .email-sent-notification i {
+            margin-right: 0.5rem;
+            color: #155724;
         }
     </style>
 </head>
@@ -96,6 +119,35 @@
 
         <!-- Result message -->
         <div id="resultMessage" class="mt-4"></div>
+
+        <!-- Add this after the resultMessage div -->
+        <div id="emailNotification" class="alert alert-info mt-3" style="display: none;">
+            <i class="bi bi-envelope"></i>
+            Notice of cancellation has been sent to <span id="userEmail" th:text="${userEmail}"></span>
+        </div>
+
+        <!-- Add this after the emailNotification div -->
+        <div class="guest-email-form mt-4" th:if="${displayName == 'Ordinary User'}" style="display: none;">
+            <div class="email-input-container">
+                <input type="email" 
+                       id="guestEmail" 
+                       class="form-control" 
+                       placeholder="Enter your email address"
+                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                       required>
+                <div class="invalid-feedback">
+                    Please enter a valid email address
+                </div>
+            </div>
+            <button class="btn btn-outline-primary mt-2" id="sendEmailBtn">
+                <i class="bi bi-envelope"></i> Send Cancellation Notification via Email
+            </button>
+        </div>
+
+        <div class="email-sent-notification alert alert-success d-none">
+            <i class="bi bi-check-circle-fill"></i>
+            The cancellation notification has been sent to <strong><span id="sentEmailAddress"></span></strong>
+        </div>
     </div>
 
     <script>
@@ -192,6 +244,14 @@
                             $('#ticketDetails').hide();
                             $('#cancelButton').hide();
                             $('#searchButton').show();
+                            
+                            // Show email notification for registered users
+                            if ($('#userEmail').text()) {
+                                $('#emailNotification').show();
+                            } else {
+                                // Show guest email form for Ordinary Users
+                                $('.guest-email-form').show();
+                            }
                         } else {
                             $('#resultMessage').html('<div class="alert alert-danger">' + response.message + '</div>');
                         }
@@ -204,6 +264,65 @@
                     }
                 });
             });
+
+            // Add email notification handling
+            const emailInput = document.getElementById('guestEmail');
+            const sendEmailBtn = document.getElementById('sendEmailBtn');
+            const emailSentNotification = document.querySelector('.email-sent-notification');
+            const sentEmailAddress = document.getElementById('sentEmailAddress');
+            const guestEmailForm = document.querySelector('.guest-email-form');
+            
+            if (sendEmailBtn) {
+                sendEmailBtn.addEventListener('click', function() {
+                    // Validate email format
+                    if (!emailInput.checkValidity()) {
+                        emailInput.classList.add('is-invalid');
+                        return;
+                    }
+                    
+                    const email = emailInput.value;
+                    const bookingReference = $('#bookingReference').val();
+                    
+                    // Send email request to backend
+                    fetch('/api/send-receipt', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            referenceNumber: bookingReference
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Show success message
+                            emailInput.disabled = true;
+                            sendEmailBtn.disabled = true;
+                            sentEmailAddress.textContent = email;
+                            
+                            // Show the notification
+                            emailSentNotification.classList.remove('d-none');
+                            emailSentNotification.style.display = 'block';
+                            
+                            // Hide the email form
+                            guestEmailForm.style.display = 'none';
+                        } else {
+                            alert('Failed to send email. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                });
+                
+                // Remove invalid class on input
+                emailInput.addEventListener('input', function() {
+                    this.classList.remove('is-invalid');
+                });
+            }
         });
     </script>
 </body>
