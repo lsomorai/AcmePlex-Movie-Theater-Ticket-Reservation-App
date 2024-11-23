@@ -24,6 +24,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "paymentid")
     private Long id;
+    @Column(name = "cardnumber")
     private String cardnumber;
     private String cardname;
     private String expirydate;
