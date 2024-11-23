@@ -17,6 +17,8 @@ import com.example.movieticket.entity.Payment;
 import com.example.movieticket.repository.PaymentRepository;
 import com.example.movieticket.entity.User;
 import com.example.movieticket.repository.UserRepository;
+import com.example.movieticket.entity.Name;
+import com.example.movieticket.repository.NameRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -25,35 +27,46 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@SessionAttributes("pendingUser")
+@SessionAttributes({"pendingUser", "pendingName"})
 public class PaymentController {
     @Autowired
     private PaymentRepository paymentRepository;
     
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private NameRepository nameRepository;
 
     @PostMapping("/RuPayment")
     @ResponseBody
-    public String processPayment(@RequestBody Payment payment, @ModelAttribute("pendingUser") User pendingUser) {
+    public String processPayment(@RequestBody Payment payment, 
+                               @ModelAttribute("pendingUser") User pendingUser,
+                               @ModelAttribute("pendingName") Name pendingName) {
         try {
-            // Create a new User instance with the pending user's data
+            // Create and save user
             User user = new User();
             user.setUsername(pendingUser.getUsername());
             user.setPassword(pendingUser.getPassword());
             user.setUserType("REGULAR");
             user.setExpirationDate(LocalDateTime.now().plusYears(1));
             
-            // Generate and set email address
+            // Generate and set email
             String email = pendingUser.getUsername() + "@ensf614.com";
             user.setEmail(email);
             
             User savedUser = userRepository.save(user);
             
-            // Then save the payment with the user ID
+            // Create and save name
+            Name name = new Name();
+            name.setFirst(pendingName.getFirst());
+            name.setLast(pendingName.getLast());
+            name.setUser(savedUser);
+            nameRepository.save(name);
+            
+            // Save payment
             payment.setUserid(savedUser.getId());
             payment.setNote("REGISTRY");
-            
             paymentRepository.save(payment);
             
             return "success";

@@ -8,6 +8,7 @@ import java.util.Collections;
 
 import java.util.List;
 
+import com.example.movieticket.entity.Name;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@SessionAttributes("pendingUser")
+@SessionAttributes({"pendingUser", "pendingName"})
 public class AuthenticationController {
 	@Autowired
 	private UserRepository userRepository;
@@ -73,7 +74,10 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/signup")
-	public String signup(User entity, Model model) {
+	public String signup(@RequestParam String firstName, 
+                        @RequestParam String lastName,
+                        User entity, 
+                        Model model) {
 		// Validate username length
 		if (entity.getUsername() == null || entity.getUsername().length() < 5) {
 			model.addAttribute("errorMessage", "Username must be at least 5 characters long");
@@ -101,7 +105,13 @@ public class AuthenticationController {
 		pendingUser.setPassword(entity.getPassword());
 		pendingUser.setUserType("REGULAR");
 		
+		// Create pending name object
+		Name pendingName = new Name();
+		pendingName.setFirst(firstName);
+		pendingName.setLast(lastName);
+		
 		model.addAttribute("pendingUser", pendingUser);
+		model.addAttribute("pendingName", pendingName);
 		model.addAttribute("username", entity.getUsername());
 		model.addAttribute("amount", "20.00");
 		
@@ -129,6 +139,11 @@ public class AuthenticationController {
 	@ModelAttribute("pendingUser")
 	public User pendingUser() {
 		return new User();
+	}
+
+	@ModelAttribute("pendingName")
+	public Name pendingName() {
+		return new Name();
 	}
 
 	@GetMapping("/dashboard")
