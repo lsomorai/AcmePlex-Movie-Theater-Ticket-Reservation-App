@@ -26,7 +26,7 @@ public class Ticket {
     @Column(name = "seat_id", nullable = false)
     private Long seatId;
 
-    @Column(name = "payment_id")
+    @Column(name = "paymentid")
     private Long paymentId;
 
     @Column(name = "purchase_date", nullable = false)

@@ -14,6 +14,7 @@ import jakarta.persistence.FetchType;
 import lombok.NonNull;
 import jakarta.persistence.Table;
 import lombok.Data;
+import jakarta.persistence.Column;
 
 @Entity()
 @Table(name = "payments")
@@ -21,6 +22,7 @@ import lombok.Data;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "paymentid")
     private Long id;
     private String cardnumber;
     private String cardname;

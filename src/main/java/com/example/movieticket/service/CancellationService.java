@@ -25,6 +25,7 @@ public class CancellationService {
     private final CreditRepository creditRepository;
     private final UserRepository userRepository;
     private final SeatRepository seatRepository;
+    private final PaymentRepository paymentRepository;
     private static final Logger logger = LoggerFactory.getLogger(CancellationService.class);
 
     @Transactional
@@ -60,32 +61,64 @@ public class CancellationService {
 
         Double seatPrice = seat.getPrice();
 
+        // Get payment information
+        Payment payment = null;
+        if (actualTicket.getPaymentId() != null) {
+            payment = paymentRepository.findById(actualTicket.getPaymentId())
+                .orElse(null);
+        }
+
+        // Get last 4 digits of card number
+        String lastFourDigits = payment != null && payment.getCardnumber() != null 
+            ? payment.getCardnumber().substring(payment.getCardnumber().length() - 4)
+            : "****";
+
         // Update ticket status
         actualTicket.setStatus(TicketStatus.CANCELED);
         ticketRepository.save(actualTicket);
+
+        // Set seat status back to AVAILABLE
+        seat.setStatus("AVAILABLE");
+        seatRepository.save(seat);
+        logger.info("Seat {} status set back to AVAILABLE", seat.getId());
 
         // Handle cancellation outcome
         User user = userRepository.findById(actualTicket.getUserId().longValue()).orElse(null);
         if (user == null) {
             logger.error("User with ID {} not found", actualTicket.getUserId());
-        } else {
-            logger.info("User found: {}", user);
         }
+
+        String refundMessage = String.format("The refund amount %.2f baht has been sent to your card ending %s", 
+            "RUs".equalsIgnoreCase(user.getUserType()) ? seatPrice : seatPrice * 0.85,
+            lastFourDigits);
 
         if ("RUs".equalsIgnoreCase(user.getUserType())) {
             logger.info("User is a registered user, issuing full refund.");
-            return "Your ticket has been canceled successfully. You will receive a full refund.";
+            return "Your ticket has been canceled successfully. " + refundMessage;
         } else {
-            // Ordinary user: generate a credit code
+            // Generate credit code using ticket reference number + current time (HHMM)
+            String timeComponent = String.format("%02d%02d", 
+                LocalDateTime.now().getHour(),
+                LocalDateTime.now().getMinute()
+            );
+            String creditCode = referenceNumber + timeComponent;
+            
+            // Ordinary user: generate a credit code for 15% of ticket price
             Credit credit = new Credit();
-            credit.setCreditCode(CreditService.generateCreditCode());
-            credit.setAmount(seatPrice * 0.85); // Deduct 15% fee
+            credit.setCreditCode(creditCode);
+            credit.setAmount(seatPrice * 0.15);
             credit.setExpiryDate(LocalDate.now().plusYears(1));
             credit.setStatus(CreditStatus.UNUSED);
             creditRepository.save(credit);
 
             logger.info("Generated credit code for ordinary user: {}", credit.getCreditCode());
-            return "Your ticket has been canceled successfully. Your credit code is: " + credit.getCreditCode();
+            return String.format(
+                "Your ticket has been canceled successfully. %s " +
+                "Your credit code for the remaining 15%% (worth %.2f baht) is: %s", 
+                refundMessage,
+                seatPrice * 0.15, 
+                creditCode
+            );
         }
     }
 
