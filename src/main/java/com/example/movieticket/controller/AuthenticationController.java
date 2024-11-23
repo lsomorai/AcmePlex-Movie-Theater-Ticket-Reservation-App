@@ -59,6 +59,7 @@ public class AuthenticationController {
 			User user = users.get(0);
 			session.setAttribute("username", user.getUsername());
 			session.setAttribute("userId", user.getId());
+			session.setAttribute("userType", user.getUserType());
 			
 			if (returnUrl != null && !returnUrl.isEmpty()) {
 				return "redirect:" + returnUrl;

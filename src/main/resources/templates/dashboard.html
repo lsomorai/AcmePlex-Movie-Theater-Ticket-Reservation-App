@@ -59,6 +59,9 @@
         <div class="actions-container">
             <a href="/theatres" class="btn btn-primary btn-lg">Browse Theatres</a>
             <a href="/cancellation/cancel-ticket" class="btn btn-secondary btn-lg">Cancel Booking</a>
+            <a th:if="${session.userType == 'ADMIN'}" 
+               href="/admin" 
+               class="btn btn-danger btn-lg">Admin Dashboard</a>
         </div>
     </div>
     
