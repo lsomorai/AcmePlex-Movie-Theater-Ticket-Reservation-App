@@ -84,18 +84,32 @@
             </div>
         </div>
 
+        <!-- Add this right after the ticket summary section -->
+        <div th:if="${userCard != null}" class="alert alert-info mb-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="useExistingCard">
+                <label class="form-check-label" for="useExistingCard">
+                    Use existing card ending in <span th:text="${#strings.substring(userCard.cardNumber, 12, 16)}"></span>
+                </label>
+            </div>
+        </div>
+
         <!-- Payment Form -->
         <form id="ticketPaymentForm" th:action="@{/process-ticket-payment}" method="post">
             <div class="form-group">
                 <label for="cardnumber">Card Number</label>
                 <input type="text" class="form-control" id="cardnumber" name="cardnumber" 
-                       maxlength="16" placeholder="1234567890123456" required>
+                       maxlength="16" placeholder="1234567890123456" 
+                       th:data-saved-number="${userCard != null ? userCard.cardNumber : ''}"
+                       required>
                 <div class="invalid-feedback">Card number must be 16 digits</div>
             </div>
             
             <div class="form-group">
                 <label for="cardname">Name on Card</label>
-                <input type="text" class="form-control" id="cardname" name="cardname" required>
+                <input type="text" class="form-control" id="cardname" name="cardname" 
+                       th:data-saved-name="${userFullName}"
+                       required>
                 <div class="invalid-feedback">Please enter the name on your card</div>
             </div>
             
@@ -104,7 +118,9 @@
                     <div class="form-group">
                         <label for="expirydate">Expiry Date</label>
                         <input type="text" class="form-control" id="expirydate" name="expirydate" 
-                               maxlength="5" placeholder="MM/YY" required>
+                               maxlength="5" placeholder="MM/YY" 
+                               th:data-saved-expiry="${userCard != null ? userCard.expiryDate : ''}"
+                               required>
                         <div class="invalid-feedback">Please enter a valid expiry date (MM/YY)</div>
                     </div>
                 </div>
@@ -220,6 +236,37 @@
                 alert('Payment failed: ' + error.message);
             });
         });
+
+        // Auto-fill functionality
+        const useExistingCardCheckbox = document.getElementById('useExistingCard');
+        if (useExistingCardCheckbox) {
+            useExistingCardCheckbox.addEventListener('change', function() {
+                const cardNumber = document.getElementById('cardnumber');
+                const cardName = document.getElementById('cardname');
+                const expiryDate = document.getElementById('expirydate');
+                
+                if (this.checked) {
+                    // Fill in saved data
+                    cardNumber.value = cardNumber.dataset.savedNumber || '';
+                    cardName.value = cardName.dataset.savedName || '';
+                    expiryDate.value = expiryDate.dataset.savedExpiry || '';
+                    
+                    // Disable fields
+                    cardNumber.readOnly = true;
+                    cardName.readOnly = true;
+                    expiryDate.readOnly = true;
+                } else {
+                    // Clear and enable fields
+                    cardNumber.value = '';
+                    cardName.value = '';
+                    expiryDate.value = '';
+                    
+                    cardNumber.readOnly = false;
+                    cardName.readOnly = false;
+                    expiryDate.readOnly = false;
+                }
+            });
+        }
     </script>
 </body>
 </html> 

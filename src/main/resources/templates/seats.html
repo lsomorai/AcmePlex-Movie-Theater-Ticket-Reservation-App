@@ -88,6 +88,52 @@
             color: #dc3545;
             margin-top: 5px;
         }
+
+        .seat.disabled {
+            background-color: #dc3545;  /* Red color for booked seats */
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.7;
+            pointer-events: none;  /* Prevents any interaction */
+        }
+        
+        /* Add legend for booked seats */
+        .seat-legend {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .legend-seat {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        .legend-seat.booked {
+            background-color: #dc3545;
+            opacity: 0.7;
+        }
+        
+        .legend-seat.special {
+            border-color: gold;
+            background-color: #fff3cd;
+        }
+
+        .button-container {
+            margin-bottom: 2rem;
+        }
     </style>
 </head>
 <body>
@@ -139,7 +185,7 @@
                         <div th:each="seat : ${entry.value}" 
                              th:class="${'seat ' + 
                                       (seat.seatType == 'special' ? 'special ' : '') + 
-                                      (seat.status != 'AVAILABLE' ? 'occupied ' : '') +
+                                      (seat.status == 'BOOKED' ? 'disabled ' : '') +
                                       (movieStatus.name() == 'COMING_SOON' && 
                                        (!isRegisteredUser || seat.seatType != 'special') ? 'disabled' : '')}"
                              th:data-seat-id="${seat.id}"
@@ -149,7 +195,7 @@
                 </div>
             </div>
 
-            <div class="text-center mt-4">
+            <div class="text-center mt-4 button-container">
                 <input type="hidden" name="selectedSeats" id="selectedSeatsInput"/>
                 <input type="hidden" name="showtimeId" th:value="${showtimeId}"/>
                 <button type="submit" class="btn btn-primary" id="bookButton">Book Selected Seats</button>
@@ -158,11 +204,31 @@
         </form>
     </div>
 
+    <div class="seat-legend">
+        <div class="legend-item">
+            <div class="legend-seat"></div>
+            <span>Available</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-seat special"></div>
+            <span>Special</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-seat booked"></div>
+            <span>Booked</span>
+        </div>
+    </div>
+
     <script>
         let selectedSeats = [];
         
         document.querySelectorAll('.seat:not(.disabled)').forEach(seat => {
             seat.addEventListener('click', function() {
+                // Check if seat is already booked
+                if (this.classList.contains('disabled')) {
+                    return; // Do nothing if seat is booked
+                }
+                
                 const seatId = this.getAttribute('data-seat-id');
                 
                 if (this.classList.contains('selected')) {
@@ -174,8 +240,15 @@
                 }
                 
                 document.getElementById('selectedSeatsInput').value = selectedSeats.join(',');
+                
+                // Enable/disable book button based on selection
+                const bookButton = document.getElementById('bookButton');
+                bookButton.disabled = selectedSeats.length === 0;
             });
         });
+        
+        // Initialize book button state
+        document.getElementById('bookButton').disabled = true;
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

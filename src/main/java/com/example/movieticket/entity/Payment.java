@@ -60,8 +60,8 @@ public class Payment {
         return cardnumber;
     }
 
-    public void setCardnumber(String carnumber) {
-        this.cardnumber = carnumber;
+    public void setCardnumber(String cardnumber) {
+        this.cardnumber = cardnumber;
     }
 
     public String getCardname() {

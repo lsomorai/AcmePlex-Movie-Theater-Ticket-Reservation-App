@@ -19,6 +19,8 @@ import com.example.movieticket.entity.User;
 import com.example.movieticket.repository.UserRepository;
 import com.example.movieticket.entity.Name;
 import com.example.movieticket.repository.NameRepository;
+import com.example.movieticket.entity.Card;
+import com.example.movieticket.repository.CardRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -37,6 +39,9 @@ public class PaymentController {
     
     @Autowired
     private NameRepository nameRepository;
+    
+    @Autowired
+    private CardRepository cardRepository;
 
     @PostMapping("/RuPayment")
     @ResponseBody
@@ -63,6 +68,13 @@ public class PaymentController {
             name.setLast(pendingName.getLast());
             name.setUser(savedUser);
             nameRepository.save(name);
+            
+            // Create and save card
+            Card card = new Card();
+            card.setCardNumber(payment.getCardnumber());
+            card.setExpiryDate(payment.getExpirydate());
+            card.setUser(savedUser);
+            cardRepository.save(card);
             
             // Save payment
             payment.setUserid(savedUser.getId());

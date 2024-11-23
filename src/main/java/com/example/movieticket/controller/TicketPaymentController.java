@@ -26,6 +26,15 @@ public class TicketPaymentController {
     
     @Autowired
     private SeatRepository seatRepository;
+    
+    @Autowired
+    private NameRepository nameRepository;
+    
+    @Autowired
+    private CardRepository cardRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/ticket-payment")
     public String showPaymentPage(@RequestParam Long showtimeId,
@@ -53,6 +62,22 @@ public class TicketPaymentController {
                                .sum();
 
         String displayName = username != null ? username : "Ordinary User";
+        
+        // Add payment info for registered users
+        if (username != null && !username.equals("Ordinary User")) {
+            // Get user's name
+            Name userName = nameRepository.findByUsername(username);
+            if (userName != null) {
+                model.addAttribute("userFullName", userName.getFirst() + " " + userName.getLast());
+            }
+            
+            // Get user's latest card
+            List<Card> userCards = cardRepository.findByUsername(username);
+            if (!userCards.isEmpty()) {
+                Card latestCard = userCards.get(0); // Get the first card
+                model.addAttribute("userCard", latestCard);
+            }
+        }
         
         // Add attributes
         model.addAttribute("displayName", displayName);
@@ -98,6 +123,15 @@ public class TicketPaymentController {
         
         model.addAttribute("displayName", displayName);
         model.addAttribute("referenceNumber", referenceNumber);
+        
+        // Add email information for registered users
+        if (username != null && !username.equals("Ordinary User")) {
+            List<User> users = userRepository.findByUsername(username);
+            if (!users.isEmpty()) {
+                String userEmail = users.get(0).getEmail();
+                model.addAttribute("userEmail", userEmail);
+            }
+        }
         
         // Clear the reference number from session after displaying
         session.removeAttribute("lastBookingReference");
