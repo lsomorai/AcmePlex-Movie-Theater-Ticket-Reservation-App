@@ -21,6 +21,8 @@ public class MovieController {
 
     @GetMapping("/theatres/{theatreId}/movies")
     public String showMovies(@PathVariable Long theatreId, Model model, HttpSession session) {
+        session.setAttribute("currentTheatreId", theatreId);
+        
         model.addAttribute("movies", movieRepository.findMoviesByTheatreId(theatreId));
         model.addAttribute("theatre", theatreRepository.findById(theatreId).orElse(null));
         
@@ -35,12 +37,15 @@ public class MovieController {
 
     @GetMapping("/movies")
     public String listAllMovies(Model model, HttpSession session) {
+        session.removeAttribute("currentTheatreId");
+        
         String username = (String) session.getAttribute("username");
         boolean isRegisteredUser = username != null && !username.equals("Ordinary User");
         
         model.addAttribute("movies", movieRepository.findAll());
         model.addAttribute("isRegisteredUser", isRegisteredUser);
         model.addAttribute("displayName", username != null ? username : "Ordinary User");
+        model.addAttribute("theatre", null);
         return "movies";
     }
 } 

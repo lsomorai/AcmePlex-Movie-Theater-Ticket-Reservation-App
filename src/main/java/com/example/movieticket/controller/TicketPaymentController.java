@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpSession;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class TicketPaymentController {
@@ -137,5 +139,25 @@ public class TicketPaymentController {
         session.removeAttribute("lastBookingReference");
         
         return "booking-success";
+    }
+
+    @PostMapping("/api/send-receipt")
+    @ResponseBody
+    public Map<String, Object> sendReceiptEmail(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String referenceNumber = request.get("referenceNumber");
+        
+        try {
+            // Here you would implement your email sending logic
+            // For now, we'll just return success
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            return response;
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("error", e.getMessage());
+            return response;
+        }
     }
 } 

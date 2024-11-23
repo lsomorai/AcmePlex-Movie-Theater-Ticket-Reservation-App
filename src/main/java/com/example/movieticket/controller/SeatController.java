@@ -32,6 +32,15 @@ public class SeatController {
             .orElseThrow(() -> new RuntimeException("Showtime not found"));
         Movie movie = showtime.getMovie();
         
+        // Get the theatre from showtime
+        model.addAttribute("theatre", showtime.getTheatre());
+        
+        // Store the theatre ID in session if it came from a theatre-specific path
+        Long currentTheatreId = (Long) session.getAttribute("currentTheatreId");
+        if (currentTheatreId != null) {
+            model.addAttribute("fromTheatre", true);
+        }
+        
         List<Seat> seats = seatRepository.findByShowtimeId(showtimeId);
         
         // Get user status

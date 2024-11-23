@@ -54,10 +54,10 @@
                 <a class="navbar-brand" href="/theatres">Movie Ticket Reservation</a>
                 <div class="user-info">
                     <span class="username" th:text="${displayName}">Username</span>
-                    <th:block th:if="${displayName != 'Guest User'}">
+                    <th:block th:if="${displayName != 'Ordinary User'}">
                         <a href="/logout" class="btn btn-outline-secondary btn-sm">Logout</a>
                     </th:block>
-                    <th:block th:if="${displayName == 'Guest User'}">
+                    <th:block th:if="${displayName == 'Ordinary User'}">
                         <a href="/" class="btn btn-outline-primary btn-sm">Login</a>
                     </th:block>
                 </div>

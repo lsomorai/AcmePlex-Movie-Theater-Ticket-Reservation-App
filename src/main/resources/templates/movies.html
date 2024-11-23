@@ -47,7 +47,7 @@
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/dashboard">Movie Ticket Reservation</a>
+                <a class="navbar-brand" th:href="${theatre != null ? '/theatres' : '/dashboard'}">Movie Ticket Reservation</a>
                 <div class="user-info">
                     <span class="username" th:text="${displayName}">Username</span>
                     <th:block th:if="${displayName != 'Ordinary User'}">
@@ -59,10 +59,10 @@
                 </div>
             </div>
         </nav>
-        <div th:if="${theatre}" class="theatre-info">
+        <div th:if="${theatre != null}" class="theatre-info">
             <h2 class="text-center" th:text="${'Movies at ' + theatre.name}">Theatre Name</h2>
         </div>
-        <h1 th:unless="${theatre}" class="text-center my-4">Now Showing</h1>
+        <h1 th:if="${theatre == null}" class="text-center my-4">Now Showing</h1>
         
         <div class="movies-container">
             <div th:if="${movies.empty}" class="alert alert-info">
@@ -88,26 +88,34 @@
                     
                     <!-- Showtime Button with Access Control -->
                     <div th:switch="${movie.status.name()}">
-                        <!-- For NOW_SHOWING movies - everyone can access -->
-                        <a th:case="'NOW_SHOWING'"
-                           th:href="@{/theatres/{theatreId}/movies/{movieId}/showtimes(theatreId=${theatre.id},movieId=${movie.id})}" 
-                           class="btn btn-primary">View Showtimes</a>
-                           
-                        <!-- For COMING_SOON movies - only registered users can access -->
+                        <!-- For NOW_SHOWING movies -->
+                        <th:block th:case="'NOW_SHOWING'">
+                            <a class="btn btn-primary"
+                               th:with="url=${theatre != null ? 
+                                    '/theatres/' + theatre.id + '/movies/' + movie.id + '/showtimes' : 
+                                    '/movies/' + movie.id + '/showtimes'}"
+                               th:href="${url}">View Showtimes</a>
+                        </th:block>
+                        
+                        <!-- For COMING_SOON movies -->
                         <th:block th:case="'COMING_SOON'">
-                            <a th:if="${isRegisteredUser}"
-                               th:href="@{/theatres/{theatreId}/movies/{movieId}/showtimes(theatreId=${theatre.id},movieId=${movie.id})}" 
-                               class="btn btn-primary">Preview Showtimes</a>
-                            <button th:unless="${isRegisteredUser}"
-                                    class="btn btn-secondary" 
-                                    disabled
-                                    title="Please register to view upcoming movie showtimes">
-                                Coming Soon
-                            </button>
-                            <small th:unless="${isRegisteredUser}" 
-                                   class="text-muted d-block mt-1">
-                                Register to view upcoming showtimes
-                            </small>
+                            <th:block th:if="${isRegisteredUser}">
+                                <a class="btn btn-primary"
+                                   th:with="url=${theatre != null ? 
+                                        '/theatres/' + theatre.id + '/movies/' + movie.id + '/showtimes' : 
+                                        '/movies/' + movie.id + '/showtimes'}"
+                                   th:href="${url}">Preview Showtimes</a>
+                            </th:block>
+                            <th:block th:unless="${isRegisteredUser}">
+                                <button class="btn btn-secondary" 
+                                        disabled
+                                        title="Please register to view upcoming movie showtimes">
+                                    Coming Soon
+                                </button>
+                                <small class="text-muted d-block mt-1">
+                                    Register to view upcoming showtimes
+                                </small>
+                            </th:block>
                         </th:block>
                     </div>
                 </div>
@@ -115,7 +123,12 @@
         </div>
         
         <div class="text-center mt-4">
-            <a href="/theatres" class="btn btn-secondary">Back to Theatres</a>
+            <a th:if="${theatre != null}" 
+               href="/theatres" 
+               class="btn btn-secondary">Back to Theatres</a>
+            <a th:if="${theatre == null}" 
+               href="/" 
+               class="btn btn-secondary">Back to Home</a>
         </div>
     </div>
 

@@ -199,7 +199,14 @@
                 <input type="hidden" name="selectedSeats" id="selectedSeatsInput"/>
                 <input type="hidden" name="showtimeId" th:value="${showtimeId}"/>
                 <button type="submit" class="btn btn-primary" id="bookButton">Book Selected Seats</button>
-                <a th:href="@{/showtimes}" class="btn btn-secondary">Back</a>
+                
+                <!-- Updated back button logic -->
+                <a th:if="${fromTheatre}" 
+                   th:href="@{/theatres/{theatreId}/movies(theatreId=${theatre.id})}" 
+                   class="btn btn-secondary">Back</a>
+                <a th:unless="${fromTheatre}"
+                   th:href="${displayName == 'Ordinary User' ? '/movies' : '/showtimes'}" 
+                   class="btn btn-secondary">Back</a>
             </div>
         </form>
     </div>

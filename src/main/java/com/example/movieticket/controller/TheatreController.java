@@ -20,9 +20,13 @@ public class TheatreController {
         List<Theatre> theatres = theatreRepository.findAll();
         model.addAttribute("theatres", theatres);
         
-        // Get username from session or set as Guest User
+        // Get username from session and set consistent display name
         String username = (String) session.getAttribute("username");
-        model.addAttribute("displayName", username != null ? username : "Guest User");
+        model.addAttribute("displayName", username != null ? username : "Ordinary User");
+        
+        // Add isRegisteredUser attribute for consistency
+        boolean isRegisteredUser = username != null && !username.equals("Ordinary User");
+        model.addAttribute("isRegisteredUser", isRegisteredUser);
         
         return "theatres";
     }
