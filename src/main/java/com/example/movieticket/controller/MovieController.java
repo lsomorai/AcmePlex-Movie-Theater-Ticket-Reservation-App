@@ -25,14 +25,22 @@ public class MovieController {
         model.addAttribute("theatre", theatreRepository.findById(theatreId).orElse(null));
         
         String username = (String) session.getAttribute("username");
+        boolean isRegisteredUser = username != null && !username.equals("Ordinary User");
+        
         model.addAttribute("displayName", username != null ? username : "Ordinary User");
+        model.addAttribute("isRegisteredUser", isRegisteredUser);
         
         return "movies";
     }
 
     @GetMapping("/movies")
-    public String listAllMovies(Model model) {
+    public String listAllMovies(Model model, HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        boolean isRegisteredUser = username != null && !username.equals("Ordinary User");
+        
         model.addAttribute("movies", movieRepository.findAll());
+        model.addAttribute("isRegisteredUser", isRegisteredUser);
+        model.addAttribute("displayName", username != null ? username : "Ordinary User");
         return "movies";
     }
 } 

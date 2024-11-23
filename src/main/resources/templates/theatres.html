@@ -69,11 +69,7 @@
         <div class="theatres-container">
             <div th:each="theatre : ${theatres}" class="card theatre-card">
                 <img class="card-img-top theatre-image" 
-                     th:src="${theatre.name == 'Scotiabank Chinook' ? 
-                            'https://www.calgarymovies.com/wp-content/uploads/2017/12/Scotiabank-Theatre-Chinook.jpg' :
-                            theatre.name == 'Cineplex Crowfoot' ?
-                            'https://www.calgarymovies.com/wp-content/uploads/2017/12/Cineplex-Crowfoot-Crossing.jpg' :
-                            'https://www.calgarymovies.com/wp-content/uploads/2017/12/Landmark-Country-Hills.jpg'}"
+                     src="https://media.istockphoto.com/id/1271522601/photo/pop-corn-and-on-red-armchair-cinema.jpg?s=612x612&w=0&k=20&c=XwQxmfrHb-OwV5onPUW5ApB4RaGBK7poSIzZj4q_N_g="
                      th:alt="${theatre.name}">
                 <div class="card-body">
                     <h5 class="theatre-title" th:text="${theatre.name}">Theatre Name</h5>

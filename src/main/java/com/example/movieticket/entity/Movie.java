@@ -20,4 +20,16 @@ public class Movie {
     @Column(nullable = false)
     private String title;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private MovieStatus status = MovieStatus.NOW_SHOWING;  // Default value
+
+    // Even though @Data provides getters/setters, adding explicit ones for clarity
+    public MovieStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MovieStatus status) {
+        this.status = status;
+    }
 }

@@ -77,8 +77,39 @@
                      th:alt="${movie.title}">
                 <div class="card-body">
                     <h5 class="card-title" th:text="${movie.title}">Movie Title</h5>
-                    <a th:href="@{/theatres/{theatreId}/movies/{movieId}/showtimes(theatreId=${theatre.id},movieId=${movie.id})}" 
-                       class="btn btn-primary">View Showtimes</a>
+                    
+                    <!-- Status Badge -->
+                    <div class="mb-2">
+                        <span th:if="${movie.status.name() == 'COMING_SOON'}" 
+                              class="badge bg-warning text-dark">Coming Soon</span>
+                        <span th:if="${movie.status.name() == 'NOW_SHOWING'}" 
+                              class="badge bg-success">Now Showing</span>
+                    </div>
+                    
+                    <!-- Showtime Button with Access Control -->
+                    <div th:switch="${movie.status.name()}">
+                        <!-- For NOW_SHOWING movies - everyone can access -->
+                        <a th:case="'NOW_SHOWING'"
+                           th:href="@{/theatres/{theatreId}/movies/{movieId}/showtimes(theatreId=${theatre.id},movieId=${movie.id})}" 
+                           class="btn btn-primary">View Showtimes</a>
+                           
+                        <!-- For COMING_SOON movies - only registered users can access -->
+                        <th:block th:case="'COMING_SOON'">
+                            <a th:if="${isRegisteredUser}"
+                               th:href="@{/theatres/{theatreId}/movies/{movieId}/showtimes(theatreId=${theatre.id},movieId=${movie.id})}" 
+                               class="btn btn-primary">Preview Showtimes</a>
+                            <button th:unless="${isRegisteredUser}"
+                                    class="btn btn-secondary" 
+                                    disabled
+                                    title="Please register to view upcoming movie showtimes">
+                                Coming Soon
+                            </button>
+                            <small th:unless="${isRegisteredUser}" 
+                                   class="text-muted d-block mt-1">
+                                Register to view upcoming showtimes
+                            </small>
+                        </th:block>
+                    </div>
                 </div>
             </div>
         </div>

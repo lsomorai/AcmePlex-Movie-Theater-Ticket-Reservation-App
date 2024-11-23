@@ -111,12 +111,25 @@
             <div class="seat-container">
                 <div class="screen">SCREEN</div>
                 
-                <!-- Add legend for special seats -->
+                <!-- Early Booking Message -->
+                <div th:if="${movieStatus.name() == 'COMING_SOON'}" 
+                     class="alert alert-warning text-center mb-4">
+                    <i class="bi bi-info-circle"></i>
+                    <span th:if="${isRegisteredUser}">
+                        Only special seats are available for early booking!
+                    </span>
+                    <span th:unless="${isRegisteredUser}">
+                        Early booking is only available for registered users!
+                    </span>
+                </div>
+                
+                <!-- Special Seats Legend -->
                 <div class="mb-4 text-center">
                     <span class="seat special d-inline-block me-2"></span>
-                    <span>Special Seats (Members Only)</span>
-                    <div th:if="${displayName == 'Ordinary User'}" class="tooltip-text">
-                        Please login to select special seats
+                    <span>Special Seats</span>
+                    <div th:if="${movieStatus.name() == 'COMING_SOON'}" class="tooltip-text">
+                        <span th:if="${isRegisteredUser}">Only special seats available for early booking</span>
+                        <span th:unless="${isRegisteredUser}">Please register to access early booking</span>
                     </div>
                 </div>
                 
@@ -127,10 +140,10 @@
                              th:class="${'seat ' + 
                                       (seat.seatType == 'special' ? 'special ' : '') + 
                                       (seat.status != 'AVAILABLE' ? 'occupied ' : '') +
-                                      (seat.seatType == 'special' and displayName == 'Ordinary User' ? 'disabled' : '')}"
+                                      (movieStatus.name() == 'COMING_SOON' && 
+                                       (!isRegisteredUser || seat.seatType != 'special') ? 'disabled' : '')}"
                              th:data-seat-id="${seat.id}"
-                             th:text="${seat.seatNumber}"
-                             th:classappend="${seat.status != 'AVAILABLE'} ? 'disabled' : ''">
+                             th:text="${seat.seatNumber}">
                         </div>
                     </div>
                 </div>
@@ -150,12 +163,6 @@
         
         document.querySelectorAll('.seat:not(.disabled)').forEach(seat => {
             seat.addEventListener('click', function() {
-                // Check if user is guest and seat is special
-                if (this.classList.contains('special') && 
-                    document.querySelector('.username').textContent === 'Ordinary User') {
-                    return; // Prevent selection
-                }
-                
                 const seatId = this.getAttribute('data-seat-id');
                 
                 if (this.classList.contains('selected')) {

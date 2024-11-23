@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
-    @Query("SELECT DISTINCT s.movie FROM Showtime s WHERE s.theatre.id = :theatreId")
+    @Query("SELECT DISTINCT s.movie FROM Showtime s WHERE s.theatre.id = :theatreId ORDER BY s.movie.status ASC")
     List<Movie> findMoviesByTheatreId(@Param("theatreId") Long theatreId);
 } 
