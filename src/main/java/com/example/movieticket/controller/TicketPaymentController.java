@@ -16,6 +16,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.time.LocalDate;
+import java.util.Optional;
 
 @Controller
 public class TicketPaymentController {
@@ -37,6 +39,9 @@ public class TicketPaymentController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CreditRepository creditRepository;
 
     @GetMapping("/ticket-payment")
     public String showPaymentPage(@RequestParam Long showtimeId,
@@ -159,5 +164,28 @@ public class TicketPaymentController {
             response.put("error", e.getMessage());
             return response;
         }
+    }
+
+    @PostMapping("/api/validate-credit")
+    @ResponseBody
+    public Map<String, Object> validateCredit(@RequestBody Map<String, String> request) {
+        String creditCode = request.get("creditCode");
+        Map<String, Object> response = new HashMap<>();
+        
+        Optional<Credit> credit = creditRepository.findByCreditCodeAndStatusAndExpiryDateGreaterThanEqual(
+            creditCode, 
+            CreditStatus.UNUSED, 
+            LocalDate.now()
+        );
+        
+        if (credit.isPresent()) {
+            response.put("valid", true);
+            response.put("amount", credit.get().getAmount());
+        } else {
+            response.put("valid", false);
+            response.put("message", "Invalid or expired credit code");
+        }
+        
+        return response;
     }
 } 

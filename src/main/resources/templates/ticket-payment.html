@@ -94,6 +94,23 @@
             </div>
         </div>
 
+        <!-- Add this before the payment form -->
+        <div class="credit-code-section mb-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="creditCode" 
+                               placeholder="Enter credit code (optional)" 
+                               pattern="REF\d{5}\d{4}">
+                        <button class="btn btn-outline-secondary" type="button" id="applyCreditBtn" disabled>
+                            Apply Credit
+                        </button>
+                    </div>
+                    <div id="creditMessage" class="mt-2"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- Payment Form -->
         <form id="ticketPaymentForm" th:action="@{/process-ticket-payment}" method="post">
             <div class="form-group">
@@ -139,6 +156,8 @@
             <input type="hidden" name="showtimeId" th:value="${showtime.id}">
             <input type="hidden" name="selectedSeats" th:value="${selectedSeatsString}">
             <input type="hidden" name="userId" th:value="${userId}">
+            <input type="hidden" id="appliedCreditAmount" name="appliedCreditAmount" value="0">
+            <input type="hidden" id="appliedCreditCode" name="appliedCreditCode" value="">
             
             <div class="mt-4">
                 <button type="submit" class="btn btn-primary">Complete Payment</button>
@@ -166,6 +185,67 @@
         });
     </script>
     <script th:inline="javascript">
+        const creditCodeInput = document.getElementById('creditCode');
+        const applyCreditBtn = document.getElementById('applyCreditBtn');
+        const creditMessage = document.getElementById('creditMessage');
+        let originalAmount = /*[[${totalPrice}]]*/ 0;
+        
+        // Credit code validation
+        creditCodeInput.addEventListener('input', function() {
+            const isValid = /^REF\d{5}\d{4}$/.test(this.value);
+            applyCreditBtn.disabled = !isValid;
+        });
+        
+        // Apply credit button handler
+        applyCreditBtn.addEventListener('click', function() {
+            const creditCode = creditCodeInput.value;
+            
+            fetch('/api/validate-credit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ creditCode: creditCode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.valid) {
+                    const creditAmount = data.amount;
+                    const newTotal = Math.max(0, originalAmount - creditAmount);
+                    
+                    // Update total amount display
+                    document.querySelector('[name="amount"]').value = newTotal;
+                    document.getElementById('appliedCreditAmount').value = creditAmount;
+                    document.getElementById('appliedCreditCode').value = creditCode;
+                    
+                    // Update display
+                    const totalDisplay = document.querySelector('.ticket-summary span:last-child');
+                    totalDisplay.textContent = `$${newTotal.toFixed(2)}`;
+                    
+                    // Show success message
+                    creditMessage.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle-fill"></i> Credit worth $${creditAmount.toFixed(2)} applied
+                        </div>`;
+                    
+                    // Disable input and button
+                    creditCodeInput.disabled = true;
+                    applyCreditBtn.disabled = true;
+                } else {
+                    creditMessage.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="bi bi-x-circle-fill"></i> ${data.message}
+                        </div>`;
+                }
+            })
+            .catch(error => {
+                creditMessage.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-x-circle-fill"></i> Error validating credit code
+                    </div>`;
+            });
+        });
+
         document.getElementById('ticketPaymentForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -205,9 +285,11 @@
                 cardname: cardName,
                 expirydate: expiryDate,
                 cvv: cvv,
-                amount: /*[[${totalPrice}]]*/ 0,
+                amount: document.querySelector('[name="amount"]').value,
                 selectedSeats: /*[[${selectedSeatsString}]]*/ '',
-                showtimeId: /*[[${showtime.id}]]*/ 0
+                showtimeId: /*[[${showtime.id}]]*/ 0,
+                appliedCreditCode: document.getElementById('appliedCreditCode').value,
+                appliedCreditAmount: document.getElementById('appliedCreditAmount').value
             };
 
             // Submit the form with better error handling

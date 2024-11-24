@@ -11,4 +11,6 @@ public class PaymentRequest {
     private double amount;
     private String selectedSeats;
     private Long showtimeId;
+    private String appliedCreditCode;
+    private Double appliedCreditAmount;
 } 

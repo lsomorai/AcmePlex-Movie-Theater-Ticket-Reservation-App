@@ -13,6 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.Optional;
+import java.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.example.movieticket.repository.CreditRepository;
+import com.example.movieticket.entity.Credit;
+import com.example.movieticket.entity.CreditStatus;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +27,8 @@ public class TicketPaymentService {
     private final PaymentRepository paymentRepository;
     private final TicketRepository ticketRepository;
     private final SeatRepository seatRepository;
+    @Autowired
+    private CreditRepository creditRepository;
 
     @Transactional
     public String processTicketPayment(PaymentRequest paymentRequest, Integer userId) {
@@ -66,6 +74,23 @@ public class TicketPaymentService {
                 seat.setStatus("BOOKED");
                 seatRepository.save(seat);
             }
+
+            // Only update credit status after successful ticket creation
+            if (paymentRequest.getAppliedCreditCode() != null && !paymentRequest.getAppliedCreditCode().isEmpty()) {
+                Optional<Credit> credit = creditRepository.findByCreditCodeAndStatusAndExpiryDateGreaterThanEqual(
+                    paymentRequest.getAppliedCreditCode(),
+                    CreditStatus.UNUSED,
+                    LocalDate.now()
+                );
+                
+                if (credit.isPresent()) {
+                    Credit usedCredit = credit.get();
+                    usedCredit.setStatus(CreditStatus.USED);
+                    creditRepository.save(usedCredit);
+                    System.out.println("Credit code " + paymentRequest.getAppliedCreditCode() + " marked as USED");
+                }
+            }
+
             return lastReferenceNumber;
         } catch (Exception e) {
             System.out.println("Error in processTicketPayment: " + e.getMessage());
