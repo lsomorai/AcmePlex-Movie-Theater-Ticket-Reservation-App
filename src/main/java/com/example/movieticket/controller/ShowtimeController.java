@@ -27,9 +27,13 @@ public class ShowtimeController {
                               @PathVariable Long movieId, 
                               Model model,
                               HttpSession session) {
-        model.addAttribute("showtimes", showtimeRepository.findByTheatreIdAndMovieId(theatreId, movieId));
-        model.addAttribute("theatre", theatreRepository.findById(theatreId).orElse(null));
-        model.addAttribute("movie", movieRepository.findById(movieId).orElse(null));
+        var showtimes = showtimeRepository.findByTheatreIdAndMovieId(theatreId, movieId);
+        var theatre = theatreRepository.findById(theatreId).orElse(null);
+        var movie = movieRepository.findById(movieId).orElse(null);
+        
+        model.addAttribute("showtimes", showtimes);
+        model.addAttribute("theatre", theatre);
+        model.addAttribute("movie", movie);
         
         String username = (String) session.getAttribute("username");
         model.addAttribute("displayName", username != null ? username : "Ordinary User");

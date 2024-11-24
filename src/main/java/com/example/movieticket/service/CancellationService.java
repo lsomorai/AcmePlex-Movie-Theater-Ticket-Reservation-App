@@ -122,7 +122,7 @@ public class CancellationService {
             creditRepository.save(credit);
 
             String refundMessage = String.format(
-                "The refund amount %.2f baht has been sent to your card ending %s", 
+                "The refund amount $%.2f has been sent to your card ending %s", 
                 seatPrice * 0.85,
                 lastFourDigits
             );
@@ -130,7 +130,7 @@ public class CancellationService {
             logger.info("Generated credit code for ordinary user: {}", credit.getCreditCode());
             return String.format(
                 "Your ticket has been canceled successfully. %s " +
-                "Your credit code for the remaining 15%% (worth %.2f baht) is: %s", 
+                "Your credit code for the remaining 15%% (worth $%.2f) is: %s", 
                 refundMessage,
                 seatPrice * 0.15, 
                 creditCode
@@ -138,7 +138,7 @@ public class CancellationService {
         } else {
             // Registered user gets full refund
             String refundMessage = String.format(
-                "The refund amount %.2f baht has been sent to your card ending %s", 
+                "The refund amount $%.2f has been sent to your card ending %s", 
                 seatPrice,
                 lastFourDigits
             );
