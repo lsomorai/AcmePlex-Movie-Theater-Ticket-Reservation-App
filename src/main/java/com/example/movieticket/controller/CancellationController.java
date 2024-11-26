@@ -15,15 +15,15 @@ import java.util.Map;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
-@Controller  // For serving HTML pages
-@RequestMapping("/cancellation")  // Base URL for cancellation
+@Controller
+@RequestMapping("/cancellation")
 @RequiredArgsConstructor
 public class CancellationController {
 
     private final CancellationService cancellationService;
     private final UserRepository userRepository;
 
-    // This is the GET method to show the cancellation page
+    // GET method to show the cancellation page
     @GetMapping("/cancel-ticket")
     public String showCancellationPage(Model model, HttpSession session) {
         String username = (String) session.getAttribute("username");
@@ -41,7 +41,7 @@ public class CancellationController {
         return "cancellation";
     }
 
-    // This is the POST method to handle the cancellation request
+    // POST method to handle the cancellation request
     @PostMapping("/cancel-booking")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> cancelTicket(@RequestBody Map<String, String> requestBody) {
