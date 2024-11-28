@@ -1,3 +1,9 @@
+/*
+ * AdminController.java
+ * Author: Rick Zhang
+ * Date: 2024-11-25
+ * ENSF 614 2024
+*/
 package com.example.movieticket.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,17 +70,20 @@ public class AdminController {
         return "admin-notifications";
     }
 
+    /*
+     * Send notifications to users
+     */
     @PostMapping("/admin/send-notifications")
     @ResponseBody
     public Map<String, String> sendNotifications(@RequestBody NotificationRequest request) {
-        // Here you would implement the actual email sending logic
+        
         
         // Return success response
         return Map.of("status", "success");
     }
 }
 
-// Add this class at the bottom of the file or in a separate file
+
 class NotificationRequest {
     private List<String> emails;
     private List<String> movies;

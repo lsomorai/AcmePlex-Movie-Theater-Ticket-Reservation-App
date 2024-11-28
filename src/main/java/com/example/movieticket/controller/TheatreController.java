@@ -1,3 +1,10 @@
+/*
+ * TheatreController.java
+ * Author: Lucien Somorai
+ * Date: 2024-11-22
+ * ENSF 614 2024
+*/
+
 package com.example.movieticket.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;

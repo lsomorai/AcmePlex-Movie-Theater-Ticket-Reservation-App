@@ -1,3 +1,10 @@
+/*
+ * TicketPaymentService.java
+ * Author: Rick Zhang
+ * Date: 2024-11-25
+ * ENSF 614 2024
+*/
+
 package com.example.movieticket.service;
 
 import com.example.movieticket.dto.PaymentRequest;

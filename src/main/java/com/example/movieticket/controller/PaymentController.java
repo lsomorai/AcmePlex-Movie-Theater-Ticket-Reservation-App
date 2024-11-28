@@ -1,3 +1,10 @@
+/*
+ * PaymentController.java
+ * Author: Cory Wu
+ * Date: 2024-11-22
+ * ENSF 614 2024
+*/
+
 package com.example.movieticket.controller;
 
 import java.util.List;

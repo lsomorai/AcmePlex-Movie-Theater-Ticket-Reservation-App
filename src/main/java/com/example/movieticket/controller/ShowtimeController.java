@@ -1,3 +1,10 @@
+/*
+ * ShowtimeController.java
+ * Author: Lucien Somorai
+ * Date: 2024-11-22
+ * ENSF 614 2024
+*/
+
 package com.example.movieticket.controller;
 
 import com.example.movieticket.repository.ShowtimeRepository;

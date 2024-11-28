@@ -1,3 +1,10 @@
+/*
+ * TicketPaymentController.java
+ * Author: Rick Zhang
+ * Date: 2024-11-25
+ * ENSF 614 2024
+*/
+
 package com.example.movieticket.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,8 +160,7 @@ public class TicketPaymentController {
         String referenceNumber = request.get("referenceNumber");
         
         try {
-            // Here you would implement your email sending logic
-            // For now, we'll just return success
+            // Mock email sending
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             return response;

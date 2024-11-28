@@ -1,6 +1,10 @@
 /*
- * Cory
- */
+ * Payment.java
+ * Author: Cory Wu
+ * Date: 2024-11-22
+ * ENSF 614 2024
+*/
+
 package com.example.movieticket.entity;
 
 import jakarta.persistence.Entity;

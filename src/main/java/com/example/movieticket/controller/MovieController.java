@@ -1,3 +1,10 @@
+/*
+ * MovieController.java
+ * Author: Lucien Somorai
+ * Date: 2024-11-2
+ * ENSF 614 2024
+*/
+
 package com.example.movieticket.controller;
 
 import com.example.movieticket.entity.Movie;
