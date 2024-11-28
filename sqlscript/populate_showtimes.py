@@ -2,21 +2,24 @@ from datetime import datetime, timedelta
 
 def generate_showtimes_sql():
     # Configuration
-    start_date = datetime(2025, 2, 1)
-    num_days = 3
-    sessions = [1, 2, 3]  # morning, afternoon, evening
+    dates = [
+        datetime.now() + timedelta(days=2),  # 2 days from now
+        datetime.now() + timedelta(days=7),  # 7 days from now
+        datetime.now() + timedelta(days=8)   # 8 days from now
+    ]
+    sessions = [1, 2]  # morning, afternoon only
     movie_ids = [1, 2, 3]  # Iron Man, Avatar, Dune
     theatre_ids = [1, 2, 3]  # Scotiabank Chinook, Cineplex Crowfoot, Landmark Country Hills
 
     # SQL file header
-    sql = "USE qbtppw7yhyi4ttyc;\n\n"
-    sql += "-- Inserting showtimes for Feb 1-3, 2025\n"
+    sql = "USE acmeplex;\n\n"
+    sql += f"-- Inserting showtimes for {dates[0].strftime('%B %d')}, "
+    sql += f"{dates[1].strftime('%B %d')}, and {dates[2].strftime('%B %d, %Y')}\n"
     sql += "INSERT INTO showtimes (movie_id, theater_id, date, session) VALUES\n"
 
     # Generate values
     values = []
-    for day in range(num_days):
-        current_date = start_date + timedelta(days=day)
+    for current_date in dates:
         formatted_date = current_date.strftime('%Y-%m-%d')
         
         for movie_id in movie_ids:

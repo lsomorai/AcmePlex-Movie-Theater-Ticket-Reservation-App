@@ -1,4 +1,79 @@
-USE qbtppw7yhyi4ttyc;
+USE acmeplex;
+
+-- Inserting basic users GUEST and ADMIN
+INSERT INTO users (username, password, usertype, expiration_date, email) VALUES 
+('guest', 'password123', 'GUEST', DATE_ADD(NOW(), INTERVAL 100 YEAR), 'guest@acmeplex.com'),
+('admin', 'admin123', 'ADMIN', DATE_ADD(NOW(), INTERVAL 1 YEAR), 'admin@acmeplex.com');
+
+-- Inserting Theatres
+INSERT INTO theaters (name) VALUES 
+    ('Scotiabank Chinook'),
+    ('Cineplex Crowfoot'),
+    ('Landmark Country Hills');
+    
+-- Inserting Movies    
+INSERT INTO movies (title, status) VALUES 
+    ('Iron Man', 'NOW_SHOWING'),
+    ('Avatar', 'NOW_SHOWING'),
+    ('Dune', 'COMING_SOON');
+    
+-- Inserting showtimes for dates relative to current date
+INSERT INTO showtimes (movie_id, theater_id, date, session) VALUES
+(1, 1, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1),
+(1, 1, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 2),
+(1, 2, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1),
+(1, 2, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 2),
+(1, 3, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1),
+(1, 3, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 2),
+(2, 1, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1),
+(2, 1, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 2),
+(2, 2, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1),
+(2, 2, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 2),
+(2, 3, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1),
+(2, 3, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 2),
+(3, 1, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1),
+(3, 1, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 2),
+(3, 2, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1),
+(3, 2, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 2),
+(3, 3, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 1),
+(3, 3, DATE_ADD(CURDATE(), INTERVAL 2 DAY), 2),
+(1, 1, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 1),
+(1, 1, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 2),
+(1, 2, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 1),
+(1, 2, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 2),
+(1, 3, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 1),
+(1, 3, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 2),
+(2, 1, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 1),
+(2, 1, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 2),
+(2, 2, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 1),
+(2, 2, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 2),
+(2, 3, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 1),
+(2, 3, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 2),
+(3, 1, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 1),
+(3, 1, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 2),
+(3, 2, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 1),
+(3, 2, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 2),
+(3, 3, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 1),
+(3, 3, DATE_ADD(CURDATE(), INTERVAL 7 DAY), 2),
+(1, 1, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 1),
+(1, 1, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 2),
+(1, 2, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 1),
+(1, 2, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 2),
+(1, 3, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 1),
+(1, 3, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 2),
+(2, 1, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 1),
+(2, 1, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 2),
+(2, 2, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 1),
+(2, 2, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 2),
+(2, 3, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 1),
+(2, 3, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 2),
+(3, 1, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 1),
+(3, 1, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 2),
+(3, 2, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 1),
+(3, 2, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 2),
+(3, 3, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 1),
+(3, 3, DATE_ADD(CURDATE(), INTERVAL 8 DAY), 2);
+
 
 -- Inserting seats for all showtimes
 INSERT INTO seats (theater_id, showtime_id, seat_row, seat_number, seat_type, price, status) VALUES
@@ -2702,3 +2777,6 @@ INSERT INTO seats (theater_id, showtime_id, seat_row, seat_number, seat_type, pr
 (3, 54, 'E', 8, 'regular', 15.00, 'AVAILABLE'),
 (3, 54, 'E', 9, 'regular', 15.00, 'AVAILABLE'),
 (3, 54, 'E', 10, 'regular', 15.00, 'AVAILABLE');
+
+
+

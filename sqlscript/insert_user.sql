@@ -1,3 +1,3 @@
 INSERT INTO users (username, password, usertype, expiration_date, email) VALUES 
-('guest', 'password123', 'GUEST', '2225-12-31 23:59:59', 'guest@acmeplex.com'),
-('admin', 'admin123', 'ADMIN', '2225-12-31 23:59:59', 'admin@acmeplex.com');
+('guest', 'password123', 'GUEST', DATE_ADD(NOW(), INTERVAL 100 YEAR), 'guest@acmeplex.com'),
+('admin', 'admin123', 'ADMIN', DATE_ADD(NOW(), INTERVAL 1 YEAR), 'admin@acmeplex.com');
