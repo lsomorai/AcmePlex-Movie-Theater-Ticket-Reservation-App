@@ -15,4 +15,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     @Query("SELECT m FROM Movie m WHERE m.status = :status")
     List<Movie> findByStatus(@Param("status") MovieStatus status);
+
+    List<Movie> findByTitleContainingIgnoreCaseAndStatus(String title, MovieStatus status);
 } 

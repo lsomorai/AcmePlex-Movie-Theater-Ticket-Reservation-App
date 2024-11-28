@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
 import org.springframework.stereotype.Repository;
+import com.example.movieticket.entity.Theatre;
 
 @Repository
 public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
@@ -19,4 +20,11 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
            "ORDER BY s.date, s.session")
     List<Showtime> findByTheatreIdAndMovieId(@Param("theatreId") Long theatreId, 
                                             @Param("movieId") Long movieId);
+
+    @Query("SELECT DISTINCT s.theatre FROM Showtime s WHERE s.movie.id = :movieId " +
+           "AND (s.date > CURRENT_DATE OR " +
+           "(s.date = CURRENT_DATE AND " +
+           "((s.session = 1 AND HOUR(CURRENT_TIME) < 10) OR " +
+           "(s.session = 2 AND HOUR(CURRENT_TIME) < 14))))")
+    List<Theatre> findTheatresByMovieId(@Param("movieId") Long movieId);
 } 
