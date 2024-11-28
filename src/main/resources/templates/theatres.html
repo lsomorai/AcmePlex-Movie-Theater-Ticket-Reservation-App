@@ -3,6 +3,7 @@
 <head>
     <title>Theatres</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .theatre-card {
             width: 18rem;
@@ -66,7 +67,12 @@
 
         <h1 class="text-center my-4">Our Theatres</h1>
         
-        <div class="theatres-container">
+        <div th:if="${theatres.empty}" class="alert alert-warning text-center">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            No theatres found in database. Please run Group9_SQL.sql to populate the database.
+        </div>
+
+        <div th:unless="${theatres.empty}" class="theatres-container">
             <div th:each="theatre : ${theatres}" class="card theatre-card">
                 <img class="card-img-top theatre-image" 
                      src="https://media.istockphoto.com/id/1271522601/photo/pop-corn-and-on-red-armchair-cinema.jpg?s=612x612&w=0&k=20&c=XwQxmfrHb-OwV5onPUW5ApB4RaGBK7poSIzZj4q_N_g="
