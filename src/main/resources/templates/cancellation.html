@@ -174,7 +174,7 @@
                     success: function(response) {
                         // Clear any existing messages first
                         $('#resultMessage').empty();
-                        
+
                         if (response.success) {
                             // Show ticket details
                             $('#movieTitle').text(response.movieTitle);
@@ -183,31 +183,32 @@
                             $('#seatNumber').text(response.seatNumber);
                             $('#purchaseDate').text(response.purchaseDate);
                             $('#ticketStatus').text(response.status);
-                            
+
                             // Show ticket details section
                             $('#ticketDetails').show();
-                            
+
                             // Always ensure refund policy is hidden first
                             $('#refundPolicy').addClass('d-none');
-                            
-                            if (response.isRefundable && response.status === 'ACTIVE') {
-                                // Eligible for cancellation
+
+                            if (response.status === 'CANCELED') {
+                                // Case 2: Ticket is already canceled
+                                $('#refundableStatus').text('This ticket has already been canceled.');
+                                $('#refundInfo').removeClass('alert-info').addClass('alert-warning');
+                                $('#cancelButton').hide();
+                                $('#searchButton').show();
+                            } else if (response.isRefundable && response.status === 'ACTIVE') {
+                                // Case 1: Eligible for cancellation
                                 $('#refundableStatus').text('This ticket is eligible for cancellation (more than 72 hours before show time).');
                                 $('#refundInfo').removeClass('alert-warning').addClass('alert-info');
                                 $('#refundPolicy').removeClass('d-none'); // Show policy only for eligible tickets
                                 $('#cancelButton').show();
                                 $('#searchButton').hide();
                             } else {
-                                // Not eligible for cancellation
+                                // Case 3: Not eligible for cancellation (less than 72 hours before show time)
                                 $('#refundableStatus').text('This ticket is not eligible for cancellation (less than 72 hours before show time).');
                                 $('#refundInfo').removeClass('alert-info').addClass('alert-warning');
-                                $('#refundPolicy').addClass('d-none'); // Ensure policy stays hidden
                                 $('#cancelButton').hide();
                                 $('#searchButton').show();
-                                
-                                if (response.status !== 'ACTIVE') {
-                                    $('#resultMessage').html('<div class="alert alert-warning">This ticket has already been ' + response.status.toLowerCase() + '.</div>');
-                                }
                             }
                         }
                     },
