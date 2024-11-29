@@ -137,7 +137,8 @@ public class CancellationService {
             logger.info("Generated credit code for ordinary user: {}", credit.getCreditCode());
             return String.format(
                 "Your ticket has been canceled successfully. %s " +
-                "Your credit code for the remaining 15%% (worth $%.2f) is: %s", 
+                "Your credit code for the remaining 15%% (worth $%.2f) is: %s" +
+                    " (valid until " + LocalDate.now().plusYears(1) +")",
                 refundMessage,
                 seatPrice * 0.15, 
                 creditCode
