@@ -60,3 +60,47 @@ The system is implemented using a multi-layered architecture:
 - **State Transition Diagrams**: Represent states for objects like tickets and payments.
 - **Package Diagram**: Demonstrates how layers interact with each other.
 - **Deployment Diagram**: Illustrates client-server-database architecture.
+
+---
+
+## Deployment Instructions  
+
+### Follow these steps to deploy the project on your local device:  
+
+### **Step 1**: Download the Source Code  
+- Clone the Git repository.  
+
+### **Step 2**: Install Necessary Dependencies  
+This is a **Spring Boot Gradle project**.  
+- Ensure the following prerequisites are installed:  
+  - **Java JDK 17** or higher  
+  - **Gradle 8.x** (or use the included Gradle wrapper)  
+  - **MySQL 8.x**  
+  - **IDE** (recommended: IntelliJ IDEA or Eclipse)  
+
+### **Step 3**: Configure the MySQL Database  
+- By default, the application uses `<username=root>` and no password.  
+- Update the `<application.properties>` file to match your database credentials if necessary.  
+- The application will create an empty MySQL schema named `<acmeplex>`. If a schema with the same name exists, rename or drop it manually.  
+
+### **Step 4**: Build and Run the Application  
+- Navigate to the project directory and run the following command:  
+  ```bash
+  ./gradlew clean build bootRun
+
+### Step 5: Verify Application Deployment  
+- Open your browser and navigate to [http://localhost:8080](http://localhost:8080) to confirm the app is running.  
+
+### Step 6: Initialize the Database  
+- Open **MySQL Workbench** and ensure the schema `<acmeplex>` is created in **Local Instance 3306**.
+- Run the script `Group9_SQL.sql` located in the `<sqlscript>` folder to populate the database.   
+
+### Step 7: Test the Application  
+- Perform the following actions to verify the functionality of the application:  
+  - Create an account.  
+  - Purchase a ticket.  
+  - Cancel a ticket.  
+  - Ensure the expected outcomes occur, such as confirmation messages or email notifications.  
+
+### Step 8: Clean Up After Testing  
+- Drop the `<acmeplex>` schema once you finish testing to clean up your database environment.  
