@@ -1,227 +1,419 @@
-<!-- booking-success.html 
-    Author: Rick Zhang
+<!-- booking-success.html
+    Author: Rick Zhang (Redesigned)
     Date: 2024-11-25
     ENSF 614 2024
 -->
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Booking Success</title>
+    <title>AcmePlex | Booking Confirmed</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: #f5f5f5;
-        }
-        .success-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .navbar {
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .user-info {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .username {
-            color: #6c757d;
-        }
-        .success-icon {
-            color: #198754;
-            font-size: 5rem;
-            margin-bottom: 1.5rem;
-        }
-        .success-message {
-            color: #198754;
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-        .success-details {
-            color: #6c757d;
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-        }
-        .action-buttons {
-            margin-top: 2rem;
-        }
-        .reference-number {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1.5rem 0;
-            font-family: monospace;
-            font-size: 1.2rem;
-            color: #198754;
-        }
-        .email-notification {
-            background: #e9ecef;
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin: 1.5rem 0;
-            font-size: 0.95rem;
-        }
-        .email-notification i {
-            margin-right: 0.5rem;
-            color: #6c757d;
-        }
-        .guest-email-form {
-            max-width: 400px;
-            margin: 2rem auto;
-        }
-        
-        .email-input-container {
-            margin-bottom: 1rem;
-        }
-        
-        .email-sent-notification {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
-            padding: 1rem;
-            border-radius: 0.25rem;
-            margin: 1rem 0;
-            text-align: center;
-        }
-        
-        .email-sent-notification i {
-            margin-right: 0.5rem;
-            color: #155724;
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/custom.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/dashboard">Movie Ticket Reservation</a>
+            <a class="navbar-brand" href="/dashboard">
+                <i class="bi bi-film me-2"></i>AcmePlex
+            </a>
             <div class="user-info">
-                <span class="username" th:text="${displayName}">Username</span>
+                <span class="username">
+                    <i class="bi bi-person-circle me-2"></i>
+                    <span th:text="${displayName}">Username</span>
+                </span>
                 <th:block th:if="${displayName != 'Ordinary User'}">
-                    <a href="/logout" class="btn btn-outline-secondary btn-sm">Logout</a>
+                    <a href="/logout" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                    </a>
                 </th:block>
                 <th:block th:if="${displayName == 'Ordinary User'}">
-                    <a href="/" class="btn btn-outline-primary btn-sm">Login</a>
+                    <a href="/" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                    </a>
                 </th:block>
             </div>
         </div>
     </nav>
 
-    <div class="success-container">
-        <div class="success-icon">
-            <i class="bi bi-check-circle-fill"></i>
+    <!-- Success Container -->
+    <div class="success-page">
+        <!-- Confetti Animation -->
+        <div class="confetti-container">
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
         </div>
-        
-        <h1 class="success-message">Booking Successful!</h1>
-        <p class="success-details">Your payment has been processed and your tickets have been booked.</p>
-        
-        <div class="reference-number">
-            <strong>Reference Number:</strong>
-            <span th:text="${referenceNumber}">REF00000</span>
-        </div>
-        
-        <div class="guest-email-form" th:if="${displayName == 'Ordinary User'}">
-            <div class="email-input-container">
-                <input type="email" 
-                       id="guestEmail" 
-                       class="form-control" 
-                       placeholder="Enter your email address"
-                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                       required>
+
+        <div class="success-container animate-fade-in-up">
+            <!-- Success Icon -->
+            <div class="success-icon-wrapper">
+                <div class="success-icon">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+                <div class="success-rings">
+                    <div class="ring ring-1"></div>
+                    <div class="ring ring-2"></div>
+                </div>
+            </div>
+
+            <h1 class="success-message">Booking Confirmed!</h1>
+            <p class="success-details">Your payment has been processed and your tickets are ready.</p>
+
+            <!-- Reference Number -->
+            <div class="reference-card">
+                <div class="reference-label">
+                    <i class="bi bi-ticket-perforated me-2"></i>Reference Number
+                </div>
+                <div class="reference-number" th:text="${referenceNumber}">REF00000</div>
+                <button class="copy-btn" onclick="copyReference()">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+            </div>
+
+            <!-- Guest Email Form -->
+            <div class="guest-email-form" th:if="${displayName == 'Ordinary User'}">
+                <p class="email-prompt">
+                    <i class="bi bi-envelope me-2"></i>
+                    Enter your email to receive your ticket confirmation
+                </p>
+                <div class="email-input-group">
+                    <input type="email"
+                           id="guestEmail"
+                           class="form-control"
+                           placeholder="your@email.com"
+                           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                           required>
+                    <button class="btn btn-primary" id="sendEmailBtn">
+                        <i class="bi bi-send"></i>
+                    </button>
+                </div>
                 <div class="invalid-feedback">
                     Please enter a valid email address
                 </div>
             </div>
-            <button class="btn btn-outline-primary mt-2" id="sendEmailBtn">
-                <i class="bi bi-envelope"></i> Send Receipt via Email
-            </button>
-        </div>
-        
-        <div class="email-notification" th:if="${userEmail != null}">
-            <p class="text-muted mt-3">
-                <i class="bi bi-envelope"></i>
-                The receipt has been sent to <span th:text="${userEmail}"></span>
-            </p>
-        </div>
-        
-        <div class="email-sent-notification alert alert-success d-none">
-            <i class="bi bi-check-circle-fill"></i>
-            The receipt has been sent to <strong><span id="sentEmailAddress"></span></strong>
-        </div>
-        
-        <div class="action-buttons">
-            <a href="/dashboard" class="btn btn-primary">Return to Dashboard</a>
+
+            <!-- Email Notification for Registered Users -->
+            <div class="email-notification" th:if="${userEmail != null}">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                Confirmation sent to <strong th:text="${userEmail}"></strong>
+            </div>
+
+            <!-- Email Sent Notification -->
+            <div class="email-sent-notification d-none" id="emailSentNotification">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                Confirmation sent to <strong id="sentEmailAddress"></strong>
+            </div>
+
+            <!-- Actions -->
+            <div class="action-buttons">
+                <a href="/dashboard" class="btn btn-primary btn-lg">
+                    <i class="bi bi-house me-2"></i>Return to Dashboard
+                </a>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="booking-tips">
+                <p>
+                    <i class="bi bi-info-circle me-2"></i>
+                    Please arrive 15 minutes before showtime
+                </p>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const emailInput = document.getElementById('guestEmail');
-        const sendEmailBtn = document.getElementById('sendEmailBtn');
-        const emailSentNotification = document.querySelector('.email-sent-notification');
-        const sentEmailAddress = document.getElementById('sentEmailAddress');
-        
-        if (sendEmailBtn) {
-            sendEmailBtn.addEventListener('click', function() {
-                // Validate email format
-                if (!emailInput.checkValidity()) {
-                    emailInput.classList.add('is-invalid');
-                    return;
-                }
-                
-                const email = emailInput.value;
-                const referenceNumber = document.querySelector('.reference-number span').textContent;
-                
-                // Send email request to backend
-                fetch('/api/send-receipt', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        referenceNumber: referenceNumber
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Show success message
-                        emailInput.disabled = true;
-                        sendEmailBtn.disabled = true;
-                        sentEmailAddress.textContent = email;
-                        
-                        // Show the notification by removing both d-none and display:none
-                        emailSentNotification.classList.remove('d-none');
-                        emailSentNotification.style.display = 'block';
-                        
-                        // Hide the email form
-                        document.querySelector('.guest-email-form').style.display = 'none';
-                    } else {
-                        alert('Failed to send email. Please try again.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
-                });
-            });
-            
-            // Remove invalid class on input
-            emailInput.addEventListener('input', function() {
-                this.classList.remove('is-invalid');
-            });
+        // Copy reference number
+        function copyReference() {
+            const ref = document.querySelector('.reference-number').textContent;
+            navigator.clipboard.writeText(ref);
+
+            const btn = document.querySelector('.copy-btn');
+            btn.innerHTML = '<i class="bi bi-check"></i>';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="bi bi-clipboard"></i>';
+            }, 2000);
         }
-    });
+
+        // Email form handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailInput = document.getElementById('guestEmail');
+            const sendEmailBtn = document.getElementById('sendEmailBtn');
+            const emailSentNotification = document.getElementById('emailSentNotification');
+            const sentEmailAddress = document.getElementById('sentEmailAddress');
+
+            if (sendEmailBtn) {
+                sendEmailBtn.addEventListener('click', function() {
+                    if (!emailInput.checkValidity()) {
+                        emailInput.classList.add('is-invalid');
+                        return;
+                    }
+
+                    const email = emailInput.value;
+                    const referenceNumber = document.querySelector('.reference-number').textContent;
+
+                    // Disable button and show loading
+                    sendEmailBtn.disabled = true;
+                    sendEmailBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+                    fetch('/api/send-receipt', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, referenceNumber })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.querySelector('.guest-email-form').style.display = 'none';
+                            sentEmailAddress.textContent = email;
+                            emailSentNotification.classList.remove('d-none');
+                        } else {
+                            alert('Failed to send email. Please try again.');
+                            sendEmailBtn.disabled = false;
+                            sendEmailBtn.innerHTML = '<i class="bi bi-send"></i>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                        sendEmailBtn.disabled = false;
+                        sendEmailBtn.innerHTML = '<i class="bi bi-send"></i>';
+                    });
+                });
+
+                emailInput.addEventListener('input', function() {
+                    this.classList.remove('is-invalid');
+                });
+            }
+        });
     </script>
+
+    <style>
+        /* Success Page Styles */
+        .success-page {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Confetti Animation */
+        .confetti-container {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--color-gold);
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        .confetti:nth-child(1) { left: 10%; animation-delay: 0s; background: var(--color-gold); }
+        .confetti:nth-child(2) { left: 30%; animation-delay: 0.5s; background: var(--color-accent-green); }
+        .confetti:nth-child(3) { left: 50%; animation-delay: 1s; background: var(--color-accent-blue); }
+        .confetti:nth-child(4) { left: 70%; animation-delay: 1.5s; background: var(--color-gold); }
+        .confetti:nth-child(5) { left: 90%; animation-delay: 2s; background: var(--color-accent-green); }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .success-container {
+            max-width: 500px;
+            width: 100%;
+            background: var(--gradient-card);
+            border: 1px solid rgba(46, 196, 182, 0.3);
+            padding: var(--space-3xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Success Icon */
+        .success-icon-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto var(--space-xl);
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--color-accent-green), #34d399);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            position: relative;
+            z-index: 2;
+            animation: success-pop 0.5s ease-out;
+        }
+
+        @keyframes success-pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .success-rings {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        .ring {
+            position: absolute;
+            inset: -10px;
+            border: 2px solid var(--color-accent-green);
+            border-radius: 50%;
+            opacity: 0;
+            animation: ring-pulse 2s ease-out infinite;
+        }
+
+        .ring-2 { animation-delay: 1s; }
+
+        @keyframes ring-pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .success-message {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--color-accent-green);
+            margin-bottom: var(--space-sm);
+        }
+
+        .success-details {
+            color: var(--color-text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: var(--space-xl);
+        }
+
+        /* Reference Card */
+        .reference-card {
+            background: var(--color-bg-elevated);
+            border: 1px solid rgba(46, 196, 182, 0.3);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            position: relative;
+        }
+
+        .reference-label {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-sm);
+        }
+
+        .reference-number {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            color: var(--color-accent-green);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: var(--space-md);
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--color-text-muted);
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .copy-btn:hover {
+            border-color: var(--color-accent-green);
+            color: var(--color-accent-green);
+        }
+
+        /* Email Form */
+        .guest-email-form {
+            margin-bottom: var(--space-xl);
+        }
+
+        .email-prompt {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .email-input-group {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .email-input-group .form-control {
+            flex: 1;
+        }
+
+        .email-input-group .btn {
+            padding: 0.875rem 1.25rem;
+        }
+
+        .email-notification,
+        .email-sent-notification {
+            background: rgba(46, 196, 182, 0.1);
+            border: 1px solid rgba(46, 196, 182, 0.3);
+            color: var(--color-accent-green);
+            padding: var(--space-md);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        .action-buttons {
+            margin-bottom: var(--space-xl);
+        }
+
+        .booking-tips {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+            padding-top: var(--space-lg);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .booking-tips i {
+            color: var(--color-gold);
+        }
+    </style>
 </body>
-</html> 
+</html>

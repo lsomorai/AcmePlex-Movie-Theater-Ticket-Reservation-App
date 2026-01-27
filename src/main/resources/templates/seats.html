@@ -1,5 +1,5 @@
-<!-- seats.html 
-    Author: Rick Zhang
+<!-- seats.html
+    Author: Rick Zhang (Redesigned)
     Date: 2024-11-25
     ENSF 614 2024
 -->
@@ -7,241 +7,201 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Seat Selection</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .seat-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin: 20px;
-        }
-        .row {
-            display: flex;
-            gap: 10px;
-        }
-        .seat {
-            width: 40px;
-            height: 40px;
-            border: 2px solid #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .seat.special {
-            border-color: gold;
-            background-color: #fff3cd;
-        }
-        .seat:hover {
-            background-color: #e9ecef;
-        }
-        .seat.selected {
-            background-color: #28a745;
-            color: white;
-        }
-        .row-label {
-            width: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-        .screen {
-            width: 80%;
-            height: 30px;
-            background-color: #dee2e6;
-            margin-bottom: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 5px;
-        }
+    <title>AcmePlex | Select Your Seats</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        .navbar {
-        margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        .user-info {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-            
-        .username {
-            color: #6c757d;
-        }
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-        .seat.disabled {
-            background-color: #e9ecef;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-        
-        .seat.special.disabled {
-            border-color: #ffd700;
-            background-color: #fff3cd;
-            opacity: 0.5;
-        }
-        
-        /* Add tooltip style for special seats */
-        .tooltip-text {
-            font-size: 0.8rem;
-            color: #dc3545;
-            margin-top: 5px;
-        }
-
-        .seat.disabled {
-            background-color: #dc3545;  /* Red color for booked seats */
-            color: white;
-            cursor: not-allowed;
-            opacity: 0.7;
-            pointer-events: none;  /* Prevents any interaction */
-        }
-        
-        /* Add legend for booked seats */
-        .seat-legend {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            margin-bottom: 2rem;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid #dee2e6;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .legend-seat {
-            width: 30px;
-            height: 30px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-        }
-        
-        .legend-seat.booked {
-            background-color: #dc3545;
-            opacity: 0.7;
-        }
-        
-        .legend-seat.special {
-            border-color: gold;
-            background-color: #fff3cd;
-        }
-
-        .button-container {
-            margin-bottom: 2rem;
-        }
-    </style>
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/custom.css">
 </head>
 <body>
     <div class="container">
-        <!-- Add navigation bar -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/dashboard">Movie Ticket Reservation</a>
+                <a class="navbar-brand" href="/dashboard">
+                    <i class="bi bi-film me-2"></i>AcmePlex
+                </a>
                 <div class="user-info">
-                    <span class="username" th:text="${displayName}">Username</span>
+                    <span class="username">
+                        <i class="bi bi-person-circle me-2"></i>
+                        <span th:text="${displayName}">Username</span>
+                    </span>
                     <th:block th:if="${displayName != 'Ordinary User'}">
-                        <a href="/logout" class="btn btn-outline-secondary btn-sm">Logout</a>
+                        <a href="/logout" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-box-arrow-right me-2"></i>Logout
+                        </a>
                     </th:block>
                     <th:block th:if="${displayName == 'Ordinary User'}">
-                        <a href="/" class="btn btn-outline-primary btn-sm">Login</a>
+                        <a href="/" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                        </a>
                     </th:block>
                 </div>
             </div>
         </nav>
+
+        <!-- Page Header -->
+        <div class="seats-header animate-fade-in-up">
+            <h1>Select Your Seats</h1>
+            <p class="text-muted">Choose the perfect view for your cinematic experience</p>
+        </div>
+
+        <!-- Seat Selection Form -->
         <form th:action="@{/ticket-confirmation}" method="post" id="seatForm">
-            <div class="seat-container">
-                <div class="screen">SCREEN</div>
-                
+            <div class="seat-container animate-fade-in-up" style="animation-delay: 0.1s;">
+                <!-- Screen -->
+                <div class="screen">
+                    <span>SCREEN</span>
+                </div>
+
                 <!-- Early Booking Message -->
-                <div th:if="${movieStatus.name() == 'COMING_SOON'}" 
-                     class="alert alert-warning text-center mb-4">
-                    <i class="bi bi-info-circle"></i>
+                <div th:if="${movieStatus.name() == 'COMING_SOON'}"
+                     class="alert alert-warning early-booking-alert">
+                    <i class="bi bi-star-fill me-2"></i>
                     <span th:if="${isRegisteredUser}">
-                        Only special seats are available for early booking!
+                        <strong>Early Access:</strong> Only special seats are available for early booking!
                     </span>
                     <span th:unless="${isRegisteredUser}">
-                        Early booking is only available for registered users!
+                        <strong>Members Only:</strong> Early booking is only available for registered users!
                     </span>
                 </div>
-                
-                <div th:each="entry : ${seatsByRow}">
-                    <div class="row">
+
+                <!-- Seat Grid -->
+                <div class="seats-grid">
+                    <div th:each="entry : ${seatsByRow}" class="seat-row">
                         <div class="row-label" th:text="${entry.key}"></div>
-                        <div th:each="seat : ${entry.value}" 
-                             th:class="${'seat ' + 
-                                      (seat.seatType == 'special' ? 'special ' : '') + 
-                                      (seat.status == 'BOOKED' ? 'disabled ' : '') +
-                                      ((displayName == 'Ordinary User' && seat.seatType == 'special') ? 'disabled ' : '') +
-                                      (movieStatus.name() == 'COMING_SOON' && 
-                                       (!isRegisteredUser || seat.seatType != 'special') ? 'disabled' : '')}"
-                             th:data-seat-id="${seat.id}"
-                             th:text="${seat.seatNumber}">
+                        <div class="seats-in-row">
+                            <div th:each="seat : ${entry.value}"
+                                 th:class="${'seat ' +
+                                          (seat.seatType == 'special' ? 'special ' : '') +
+                                          (seat.status == 'BOOKED' ? 'disabled booked ' : '') +
+                                          ((displayName == 'Ordinary User' && seat.seatType == 'special') ? 'disabled restricted ' : '') +
+                                          (movieStatus.name() == 'COMING_SOON' &&
+                                           (!isRegisteredUser || seat.seatType != 'special') ? 'disabled restricted' : '')}"
+                                 th:data-seat-id="${seat.id}"
+                                 th:title="${seat.status == 'BOOKED' ? 'Already booked' :
+                                           (seat.seatType == 'special' && displayName == 'Ordinary User') ? 'Members only' : 'Click to select'}">
+                                <span class="seat-number" th:text="${seat.seatNumber}"></span>
+                                <span class="seat-icon" th:if="${seat.seatType == 'special'}">
+                                    <i class="bi bi-star-fill"></i>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="text-center mt-4 button-container">
+            <!-- Selection Summary -->
+            <div class="selection-summary animate-fade-in-up" style="animation-delay: 0.2s;">
+                <div class="summary-content">
+                    <div class="summary-info">
+                        <span class="summary-label">Selected Seats:</span>
+                        <span class="summary-value" id="selectedCount">0</span>
+                    </div>
+                    <div class="summary-seats" id="selectedSeatsList">
+                        <span class="no-selection">No seats selected</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="text-center mt-4 button-container animate-fade-in-up" style="animation-delay: 0.3s;">
                 <input type="hidden" name="selectedSeats" id="selectedSeatsInput"/>
                 <input type="hidden" name="showtimeId" th:value="${showtimeId}"/>
-                <button type="submit" class="btn btn-primary" id="bookButton">Book Selected Seats</button>
-                
+
+                <button type="submit" class="btn btn-primary btn-lg" id="bookButton" disabled>
+                    <i class="bi bi-ticket-perforated me-2"></i>Book Selected Seats
+                </button>
+
                 <!-- Updated back button logic -->
-                <a th:if="${fromTheatre}" 
-                   th:href="@{/theatres/{theatreId}/movies(theatreId=${theatre.id})}" 
-                   class="btn btn-secondary">Back</a>
+                <a th:if="${fromTheatre}"
+                   th:href="@{/theatres/{theatreId}/movies(theatreId=${theatre.id})}"
+                   class="btn btn-secondary btn-lg">
+                    <i class="bi bi-arrow-left me-2"></i>Back
+                </a>
                 <a th:unless="${fromTheatre}"
-                   th:href="${displayName == 'Ordinary User' ? '/movies' : '/showtimes'}" 
-                   class="btn btn-secondary">Back</a>
+                   th:href="${displayName == 'Ordinary User' ? '/movies' : '/showtimes'}"
+                   class="btn btn-secondary btn-lg">
+                    <i class="bi bi-arrow-left me-2"></i>Back
+                </a>
             </div>
         </form>
+
+        <!-- Seat Legend -->
+        <div class="seat-legend animate-fade-in-up" style="animation-delay: 0.4s;">
+            <div class="legend-item">
+                <div class="legend-seat available"></div>
+                <span>Available</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-seat special"></div>
+                <span>Premium <small>(Members Only)</small></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-seat selected"></div>
+                <span>Selected</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-seat booked"></div>
+                <span>Booked</span>
+            </div>
+        </div>
     </div>
 
-    <div class="seat-legend">
-        <div class="legend-item">
-            <div class="legend-seat"></div>
-            <span>Available</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-seat special"></div>
-            <span>Special (Registered Users Only)</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-seat booked"></div>
-            <span>Booked</span>
-        </div>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         let selectedSeats = [];
-        const isGuestUser = document.querySelector('.username').textContent === 'Ordinary User';
-        
+        const isGuestUser = document.querySelector('.username span').textContent === 'Ordinary User';
+
+        // Update selection display
+        function updateSelectionDisplay() {
+            const countEl = document.getElementById('selectedCount');
+            const listEl = document.getElementById('selectedSeatsList');
+            const bookBtn = document.getElementById('bookButton');
+
+            countEl.textContent = selectedSeats.length;
+
+            if (selectedSeats.length === 0) {
+                listEl.innerHTML = '<span class="no-selection">No seats selected</span>';
+                bookBtn.disabled = true;
+            } else {
+                const seatLabels = [];
+                document.querySelectorAll('.seat.selected').forEach(seat => {
+                    const row = seat.closest('.seat-row').querySelector('.row-label').textContent;
+                    const num = seat.querySelector('.seat-number').textContent;
+                    seatLabels.push(row + num);
+                });
+                listEl.innerHTML = seatLabels.map(s =>
+                    `<span class="selected-seat-badge">${s}</span>`
+                ).join('');
+                bookBtn.disabled = false;
+            }
+        }
+
+        // Seat click handler
         document.querySelectorAll('.seat:not(.disabled)').forEach(seat => {
             seat.addEventListener('click', function() {
-                // Check if seat is already booked or disabled
-                if (this.classList.contains('disabled')) {
-                    return;
-                }
-                
+                if (this.classList.contains('disabled')) return;
+
                 // Prevent guest users from selecting special seats
                 if (isGuestUser && this.classList.contains('special')) {
-                    alert('Special seats are only available for registered users. Please login or register.');
+                    showToast('Premium seats are only available for registered members.');
                     return;
                 }
-                
+
                 const seatId = this.getAttribute('data-seat-id');
-                
+
                 if (this.classList.contains('selected')) {
                     this.classList.remove('selected');
                     selectedSeats = selectedSeats.filter(id => id !== seatId);
@@ -249,19 +209,262 @@
                     this.classList.add('selected');
                     selectedSeats.push(seatId);
                 }
-                
+
                 document.getElementById('selectedSeatsInput').value = selectedSeats.join(',');
-                
-                // Enable/disable book button based on selection
-                const bookButton = document.getElementById('bookButton');
-                bookButton.disabled = selectedSeats.length === 0;
+                updateSelectionDisplay();
             });
         });
-        
-        // Initialize book button state
-        document.getElementById('bookButton').disabled = true;
+
+        // Simple toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'custom-toast';
+            toast.innerHTML = `<i class="bi bi-info-circle me-2"></i>${message}`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize
+        updateSelectionDisplay();
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        /* Seats Page Specific Styles */
+        .seats-header {
+            text-align: center;
+            padding: var(--space-2xl) 0 var(--space-xl);
+        }
+
+        .seats-header h1 {
+            font-family: var(--font-display);
+            margin-bottom: var(--space-sm);
+        }
+
+        .early-booking-alert {
+            max-width: 500px;
+            margin: 0 auto var(--space-xl);
+            text-align: center;
+        }
+
+        /* Seats Grid */
+        .seats-grid {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            align-items: center;
+        }
+
+        .seat-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .seats-in-row {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        /* Individual Seat */
+        .seat {
+            width: 48px;
+            height: 48px;
+            background: var(--color-bg-elevated);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .seat-number {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+        }
+
+        .seat-icon {
+            font-size: 0.5rem;
+            color: var(--color-gold);
+            margin-top: -2px;
+        }
+
+        .seat:hover:not(.disabled) {
+            border-color: var(--color-gold);
+            transform: scale(1.1);
+            z-index: 1;
+            box-shadow: var(--shadow-gold);
+        }
+
+        .seat.special {
+            border-color: var(--color-gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .seat.special .seat-number {
+            color: var(--color-gold);
+        }
+
+        .seat.selected {
+            background: var(--color-accent-green) !important;
+            border-color: var(--color-accent-green) !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(46, 196, 182, 0.4);
+        }
+
+        .seat.selected .seat-number,
+        .seat.selected .seat-icon {
+            color: white !important;
+        }
+
+        .seat.disabled {
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .seat.disabled.booked {
+            background: var(--color-accent-red);
+            border-color: var(--color-accent-red);
+            opacity: 0.7;
+        }
+
+        .seat.disabled.booked .seat-number {
+            color: white;
+        }
+
+        .seat.disabled.restricted {
+            opacity: 0.4;
+        }
+
+        /* Selection Summary */
+        .selection-summary {
+            max-width: 500px;
+            margin: var(--space-xl) auto;
+            background: var(--color-bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+
+        .summary-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .summary-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-label {
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        .summary-value {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: var(--color-gold);
+        }
+
+        .summary-seats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+
+        .no-selection {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        .selected-seat-badge {
+            background: var(--color-accent-green);
+            color: white;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Legend */
+        .seat-legend .legend-seat {
+            width: 32px;
+            height: 32px;
+        }
+
+        .seat-legend .legend-seat.available {
+            background: var(--color-bg-elevated);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .seat-legend .legend-seat.selected {
+            background: var(--color-accent-green);
+            border-color: var(--color-accent-green);
+        }
+
+        /* Toast */
+        .custom-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--color-bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: var(--space-md) var(--space-xl);
+            border-radius: var(--radius-lg);
+            color: var(--color-text-primary);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 9999;
+        }
+
+        .custom-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .seat {
+                width: 38px;
+                height: 38px;
+            }
+
+            .seat-number {
+                font-size: 0.6rem;
+            }
+
+            .seats-in-row {
+                gap: var(--space-xs);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .seat {
+                width: 32px;
+                height: 32px;
+            }
+
+            .row-label {
+                width: 20px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
 </body>
-</html> 
+</html>

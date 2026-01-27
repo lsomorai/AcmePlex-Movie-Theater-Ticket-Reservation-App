@@ -1,130 +1,354 @@
-<!-- dashboard.html 
-    Author: Rick Zhang
+<!-- dashboard.html
+    Author: Rick Zhang (Redesigned)
     Date: 2024-11-25
     ENSF 614 2024
 -->
 
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head> 
-    <title>User Dashboard</title> 
+<head>
+    <title>AcmePlex | Dashboard</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            min-height: 100vh;
-            background: #f5f5f5;
-        }
-        .dashboard-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-        }
-        .welcome-section {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-        .actions-container {
-            display: grid;
-            gap: 1rem;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        .navbar {
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .user-info {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .username {
-            color: #6c757d;
-        }
-        .search-section {
-            max-width: 600px;
-            margin: 2rem auto;
-        }
-        .movie-results {
-            margin-top: 2rem;
-        }
-        .movie-card {
-            margin-bottom: 1rem;
-            transition: transform 0.3s;
-        }
-        .movie-card:hover {
-            transform: translateY(-5px);
-        }
-        .theatre-list {
-            margin-top: 1rem;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/custom.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="/dashboard">Movie Ticket Reservation</a>
+            <a class="navbar-brand" href="/dashboard">
+                <i class="bi bi-film me-2"></i>AcmePlex
+            </a>
             <div class="user-info">
-                <span class="username" th:text="${displayName}">Username</span>
-                <a href="/logout" class="btn btn-outline-secondary btn-sm">Logout</a>
+                <span class="username">
+                    <i class="bi bi-person-circle me-2"></i>
+                    <span th:text="${displayName}">Username</span>
+                </span>
+                <a href="/logout" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                </a>
             </div>
         </div>
     </nav>
 
     <div class="dashboard-container">
-        <div class="welcome-section">
-            <h2>Welcome, <span th:text="${displayName}">User</span>!</h2>
-            <p class="text-muted">What would you like to do today?</p>
+        <!-- Welcome Section -->
+        <div class="welcome-section animate-fade-in-up">
+            <div class="welcome-icon">
+                <i class="bi bi-stars"></i>
+            </div>
+            <h2>Welcome back, <span class="text-gold" th:text="${displayName}">User</span>!</h2>
+            <p class="text-muted">What cinematic experience awaits you today?</p>
         </div>
-        
-        <div class="search-section">
-            <form action="/dashboard/search" method="GET" class="mb-4">
-                <div class="input-group">
-                    <input type="text" name="query" class="form-control" 
-                           placeholder="Search for movies..." 
-                           th:value="${searchQuery}">
-                    <button class="btn btn-primary" type="submit">Search</button>
+
+        <!-- Search Section -->
+        <div class="search-section animate-fade-in-up" style="animation-delay: 0.1s;">
+            <form action="/dashboard/search" method="GET" class="search-form">
+                <div class="search-wrapper">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text"
+                           name="query"
+                           class="form-control search-input"
+                           placeholder="Search for movies..."
+                           th:value="${searchQuery}"
+                           autocomplete="off">
+                    <button class="btn btn-primary search-btn" type="submit">
+                        Search
+                    </button>
                 </div>
             </form>
 
+            <!-- Search Results -->
             <div class="movie-results" th:if="${movies != null}">
-                <h3 class="mb-3" th:if="${searchQuery != null}">
-                    Search Results for: <span th:text="${searchQuery}"></span>
+                <h3 class="results-title" th:if="${searchQuery != null}">
+                    <i class="bi bi-collection-play me-2"></i>
+                    Results for "<span th:text="${searchQuery}"></span>"
                 </h3>
-                <h3 class="mb-3" th:if="${searchQuery == null}">All Movies</h3>
-                
+                <h3 class="results-title" th:if="${searchQuery == null}">
+                    <i class="bi bi-collection-play me-2"></i>
+                    All Movies
+                </h3>
+
                 <div th:if="${movies.empty}" class="alert alert-info">
-                    No movies found. Showing all available movies.
+                    <i class="bi bi-info-circle me-2"></i>
+                    No movies found. Try a different search term.
                 </div>
 
-                <div class="movie-card card" th:each="movie : ${movies}">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${movie.title}">Movie Title</h5>
-                        <div class="theatre-list">
-                            <h6>Available at:</h6>
-                            <div th:each="theatre : ${theatresByMovie.get(movie.id)}" class="mb-2">
-                                <a th:href="@{/theatres/{theatreId}/movies/{movieId}/showtimes(theatreId=${theatre.id},movieId=${movie.id})}" 
-                                   class="btn btn-outline-primary btn-sm">
-                                    <span th:text="${theatre.name}">Theatre Name</span> - View Showtimes
-                                </a>
+                <div class="results-grid">
+                    <div th:each="movie : ${movies}" class="movie-result-card card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-film me-2 text-gold"></i>
+                                <span th:text="${movie.title}">Movie Title</span>
+                            </h5>
+                            <div class="theatre-list">
+                                <h6>
+                                    <i class="bi bi-geo-alt me-2"></i>Available at:
+                                </h6>
+                                <div class="theatre-buttons">
+                                    <a th:each="theatre : ${theatresByMovie.get(movie.id)}"
+                                       th:href="@{/theatres/{theatreId}/movies/{movieId}/showtimes(theatreId=${theatre.id},movieId=${movie.id})}"
+                                       class="btn btn-outline-primary btn-sm">
+                                        <span th:text="${theatre.name}">Theatre Name</span>
+                                        <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="actions-container">
-            <a href="/theatres" class="btn btn-primary btn-lg">Browse Theatres</a>
-            <a href="/cancellation/cancel-ticket" class="btn btn-secondary btn-lg">Cancel Booking</a>
-            <a th:if="${session.userType == 'ADMIN'}" 
-               href="/admin" 
-               class="btn btn-danger btn-lg">Admin Dashboard</a>
+
+        <!-- Quick Actions -->
+        <div class="actions-section animate-fade-in-up" style="animation-delay: 0.2s;">
+            <h3 class="section-title">
+                <span class="title-line"></span>
+                <span>Quick Actions</span>
+                <span class="title-line"></span>
+            </h3>
+
+            <div class="actions-container">
+                <a href="/theatres" class="action-card">
+                    <div class="action-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <div class="action-content">
+                        <h4>Browse Theatres</h4>
+                        <p>Explore our premium venues</p>
+                    </div>
+                    <i class="bi bi-chevron-right action-arrow"></i>
+                </a>
+
+                <a href="/cancellation/cancel-ticket" class="action-card">
+                    <div class="action-icon action-icon-secondary">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+                    <div class="action-content">
+                        <h4>Cancel Booking</h4>
+                        <p>Manage your reservations</p>
+                    </div>
+                    <i class="bi bi-chevron-right action-arrow"></i>
+                </a>
+
+                <a th:if="${session.userType == 'ADMIN'}"
+                   href="/admin"
+                   class="action-card action-card-admin">
+                    <div class="action-icon action-icon-admin">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <div class="action-content">
+                        <h4>Admin Dashboard</h4>
+                        <p>System management</p>
+                    </div>
+                    <i class="bi bi-chevron-right action-arrow"></i>
+                </a>
+            </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        /* Dashboard Specific Styles */
+        .welcome-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--space-lg);
+            background: var(--gradient-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #0a0a0f;
+            box-shadow: var(--shadow-gold);
+        }
+
+        /* Search Form */
+        .search-form {
+            margin-bottom: var(--space-xl);
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: var(--space-lg);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-muted);
+            font-size: 1.1rem;
+            z-index: 1;
+        }
+
+        .search-input {
+            padding-left: 3rem !important;
+            flex: 1;
+        }
+
+        .search-btn {
+            padding: 0.875rem 2rem !important;
+            border-radius: var(--radius-md) !important;
+        }
+
+        /* Results */
+        .results-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            margin-bottom: var(--space-lg);
+            color: var(--color-text-primary);
+        }
+
+        .results-grid {
+            display: grid;
+            gap: var(--space-md);
+        }
+
+        .movie-result-card {
+            margin: 0;
+        }
+
+        .movie-result-card:hover {
+            transform: translateX(8px);
+        }
+
+        .theatre-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+            margin-top: var(--space-sm);
+        }
+
+        /* Actions Section */
+        .actions-section {
+            margin-top: var(--space-3xl);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-lg);
+            font-family: var(--font-display);
+            font-size: 1rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: var(--space-xl);
+        }
+
+        .title-line {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+        }
+
+        .actions-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-lg);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .action-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            padding: var(--space-xl);
+            background: var(--gradient-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            transition: all var(--transition-base);
+        }
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .action-card:hover .action-arrow {
+            transform: translateX(4px);
+            color: var(--color-gold);
+        }
+
+        .action-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--gradient-gold);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #0a0a0f;
+            flex-shrink: 0;
+        }
+
+        .action-icon-secondary {
+            background: var(--color-bg-elevated);
+            color: var(--color-text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .action-icon-admin {
+            background: linear-gradient(135deg, var(--color-accent-red), #ff6b6b);
+        }
+
+        .action-content {
+            flex: 1;
+        }
+
+        .action-content h4 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .action-content p {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin: 0;
+        }
+
+        .action-arrow {
+            color: var(--color-text-muted);
+            font-size: 1.25rem;
+            transition: all var(--transition-fast);
+        }
+
+        @media (max-width: 768px) {
+            .search-wrapper {
+                flex-direction: column;
+            }
+
+            .search-btn {
+                width: 100%;
+            }
+
+            .actions-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </body>
-</html> 
+</html>
