@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: acmeplex-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/acmeplex?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=acmeplex
+      - SPRING_DATASOURCE_PASSWORD=acmeplex123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQLDialect
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - acmeplex-network
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: acmeplex-db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=acmeplex
+      - MYSQL_USER=acmeplex
+      - MYSQL_PASSWORD=acmeplex123
+      - MYSQL_ROOT_PASSWORD=root123
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - acmeplex-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  adminer:
+    image: adminer:latest
+    container_name: acmeplex-adminer
+    ports:
+      - "8081:8080"
+    networks:
+      - acmeplex-network
+    depends_on:
+      - db
+    restart: unless-stopped
+
+networks:
+  acmeplex-network:
+    driver: bridge
+
+volumes:
+  mysql-data:

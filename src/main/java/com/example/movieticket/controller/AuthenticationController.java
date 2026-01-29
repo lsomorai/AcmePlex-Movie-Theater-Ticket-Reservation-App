@@ -15,6 +15,7 @@ import com.example.movieticket.entity.Name;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +39,9 @@ public class AuthenticationController {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
 	@GetMapping("/")
 	public String showLoginPage(@RequestParam(required = false) String returnUrl, Model model) {
 		model.addAttribute("user", new User());
@@ -51,36 +55,36 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/login")
-	public String login(User entity, HttpSession session, Model model, 
+	public String login(User entity, HttpSession session, Model model,
 	                   @RequestParam(required = false) String returnUrl) {
-		List<User> users = userRepository.findByUsernamePassword(
-			entity.getUsername(),
-			entity.getPassword()
-		);
+		List<User> users = userRepository.findByUsername(entity.getUsername());
 
 		if (!users.isEmpty()) {
 			User user = users.get(0);
-			session.setAttribute("username", user.getUsername());
-			session.setAttribute("userId", user.getId());
-			session.setAttribute("userType", user.getUserType());
-			
-			if (returnUrl != null && !returnUrl.isEmpty()) {
-				return "redirect:" + returnUrl;
+			// Verify password using BCrypt
+			if (passwordEncoder.matches(entity.getPassword(), user.getPassword())) {
+				session.setAttribute("username", user.getUsername());
+				session.setAttribute("userId", user.getId());
+				session.setAttribute("userType", user.getUserType());
+
+				if (returnUrl != null && !returnUrl.isEmpty()) {
+					return "redirect:" + returnUrl;
+				}
+				return "redirect:/dashboard";
 			}
-			return "redirect:/dashboard";
-		} else {
-			model.addAttribute("user", new User());
-			model.addAttribute("errorMessage", "Invalid username or password");
-			model.addAttribute("isError", true);
-			model.addAttribute("returnUrl", returnUrl);
-			return "index";
 		}
+
+		model.addAttribute("user", new User());
+		model.addAttribute("errorMessage", "Invalid username or password");
+		model.addAttribute("isError", true);
+		model.addAttribute("returnUrl", returnUrl);
+		return "index";
 	}
 
 	@PostMapping("/signup")
-	public String signup(@RequestParam String firstName, 
+	public String signup(@RequestParam String firstName,
                         @RequestParam String lastName,
-                        User entity, 
+                        User entity,
                         Model model) {
 		// Validate username length
 		if (entity.getUsername() == null || entity.getUsername().length() < 5) {
@@ -88,7 +92,7 @@ public class AuthenticationController {
 			model.addAttribute("isError", true);
 			return "register";
 		}
-		
+
 		// Validate password length
 		if (entity.getPassword() == null || entity.getPassword().length() < 5) {
 			model.addAttribute("errorMessage", "Password must be at least 5 characters long");
@@ -102,23 +106,23 @@ public class AuthenticationController {
 			model.addAttribute("isError", true);
 			return "register";
 		}
-		
-		// Store complete user object in model
+
+		// Store complete user object in model with hashed password
 		User pendingUser = new User();
 		pendingUser.setUsername(entity.getUsername());
-		pendingUser.setPassword(entity.getPassword());
+		pendingUser.setPassword(passwordEncoder.encode(entity.getPassword()));
 		pendingUser.setUserType("REGULAR");
-		
+
 		// Create pending name object
 		Name pendingName = new Name();
 		pendingName.setFirst(firstName);
 		pendingName.setLast(lastName);
-		
+
 		model.addAttribute("pendingUser", pendingUser);
 		model.addAttribute("pendingName", pendingName);
 		model.addAttribute("username", entity.getUsername());
 		model.addAttribute("amount", "20.00");
-		
+
 		return "payment";
 	}
 

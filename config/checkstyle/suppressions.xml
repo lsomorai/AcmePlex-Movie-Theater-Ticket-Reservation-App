@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <!-- Suppress all checks for test files -->
+    <suppress files=".*Test\.java" checks=".*"/>
+    <suppress files=".*Tests\.java" checks=".*"/>
+
+    <!-- Suppress visibility modifier for entities using Lombok @Data -->
+    <suppress files=".*entity.*\.java" checks="VisibilityModifier"/>
+    <suppress files=".*dto.*\.java" checks="VisibilityModifier"/>
+
+    <!-- Suppress utility class constructor check for Spring configuration classes -->
+    <suppress files=".*Config\.java" checks="HideUtilityClassConstructor"/>
+    <suppress files=".*Application\.java" checks="HideUtilityClassConstructor"/>
+
+    <!-- Suppress magic numbers in test files -->
+    <suppress files=".*Test\.java" checks="MagicNumber"/>
+</suppressions>
