@@ -4,7 +4,7 @@
 -- Users (passwords are BCrypt hashed)
 -- guest: password123, admin: admin123, testuser: test123
 INSERT INTO users (id, email, expiration_date, password, username, usertype) VALUES
-(1, 'guest@acmeplex.com', '2124-11-27 20:44:28', '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mrq4L0bYf0I.P3jLH1rj.1zFQOQr1Wa', 'guest', 'GUEST'),
+(1, 'guest@acmeplex.com', '2030-11-27 20:44:28', '$2a$10$N9qo8uLOickgx2ZMRZoMy.Mrq4L0bYf0I.P3jLH1rj.1zFQOQr1Wa', 'guest', 'GUEST'),
 (2, 'admin@acmeplex.com', '2025-11-27 20:44:28', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 'admin', 'ADMIN'),
 (3, 'test@acmeplex.com', '2025-11-27 20:44:28', '$2a$10$8dMHx7rPWW16E0i8wPk9g.HdKY0HxEI8n1r7e5bLBPOIJG5GbqBIS', 'testuser', 'REGULAR');
 

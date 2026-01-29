@@ -19,6 +19,9 @@ RUN ./gradlew dependencies --no-daemon || true
 # Copy source code
 COPY src ./src
 
+# Copy config files (checkstyle, etc.)
+COPY config ./config
+
 # Build the application
 RUN ./gradlew build -x test --no-daemon
 
