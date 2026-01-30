@@ -73,9 +73,9 @@ export const TicketPaymentPage: React.FC = () => {
         expiryDate: formData.expiryDate,
         cvv: formData.cvv,
         cardholderName: formData.cardholderName,
+        amount: totalPrice,
         creditCode: formData.creditCode || undefined,
         userId: isAuthenticated ? user?.id : undefined,
-        email: isGuest ? formData.email : user?.email,
       });
 
       if (response.success && response.data) {

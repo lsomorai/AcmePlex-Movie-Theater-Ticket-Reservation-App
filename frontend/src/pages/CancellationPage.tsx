@@ -6,17 +6,14 @@ import { TicketResponse } from '@/types';
 import toast from 'react-hot-toast';
 
 export const CancellationPage: React.FC = () => {
-  const { isAuthenticated, isGuest } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const [referenceNumber, setReferenceNumber] = useState('');
   const [email, setEmail] = useState('');
   const [tickets, setTickets] = useState<TicketResponse[] | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
-  const [cancellationResult, setCancellationResult] = useState<{
-    refundAmount: number;
-    creditCode?: string;
-  } | null>(null);
+  const [cancellationResult, setCancellationResult] = useState<string | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,13 +41,10 @@ export const CancellationPage: React.FC = () => {
     setIsCancelling(true);
 
     try {
-      const response = await ticketsApi.cancel(
-        referenceNumber,
-        isGuest ? email : undefined
-      );
+      const response = await ticketsApi.cancel(referenceNumber);
 
-      if (response.success && response.data) {
-        setCancellationResult(response.data);
+      if (response.success) {
+        setCancellationResult(response.message || 'Cancellation successful');
         setTickets(null);
         toast.success('Tickets cancelled successfully');
       } else {
@@ -207,23 +201,8 @@ export const CancellationPage: React.FC = () => {
             </h3>
 
             <div className="bg-bg-elevated rounded-lg p-6 mb-6">
-              <p className="text-text-muted text-sm mb-2">Refund Amount</p>
-              <p className="text-3xl font-display text-gold-gradient font-bold">
-                ${cancellationResult.refundAmount.toFixed(2)}
-              </p>
+              <p className="text-text-primary">{cancellationResult}</p>
             </div>
-
-            {cancellationResult.creditCode && (
-              <div className="bg-bg-elevated border border-gold/30 rounded-lg p-6">
-                <p className="text-text-muted text-sm mb-2">Credit Code</p>
-                <p className="text-2xl font-mono text-gold font-bold">
-                  {cancellationResult.creditCode}
-                </p>
-                <p className="text-text-muted text-sm mt-2">
-                  Use this code on your next booking
-                </p>
-              </div>
-            )}
 
             <button
               onClick={() => {
