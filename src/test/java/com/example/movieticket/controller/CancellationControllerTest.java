@@ -1,6 +1,7 @@
 package com.example.movieticket.controller;
 
-import com.example.movieticket.config.SecurityConfig;
+import com.example.movieticket.security.JwtAuthenticationFilter;
+import com.example.movieticket.security.JwtTokenProvider;
 import com.example.movieticket.entity.User;
 import com.example.movieticket.exception.TicketNotFoundException;
 import com.example.movieticket.exception.TicketNotRefundableException;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,13 +25,16 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CancellationController.class)
-@Import(SecurityConfig.class)
+@org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc(addFilters = false)
+@org.springframework.test.context.TestPropertySource(properties = {
+    "spring.web.resources.add-mappings=false",
+    "spring.mvc.static-path-pattern=/static-disabled/**"
+})
 class CancellationControllerTest {
 
     @Autowired
@@ -45,6 +48,12 @@ class CancellationControllerTest {
 
     @MockBean
     private UserRepository userRepository;
+
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
 
     private MockHttpSession session;
     private User testUser;

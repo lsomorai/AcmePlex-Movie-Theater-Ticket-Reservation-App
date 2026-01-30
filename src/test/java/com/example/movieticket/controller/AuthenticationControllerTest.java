@@ -8,26 +8,28 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 import java.util.List;
 
-import com.example.movieticket.config.SecurityConfig;
+import com.example.movieticket.security.JwtAuthenticationFilter;
+import com.example.movieticket.security.JwtTokenProvider;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AuthenticationController.class)
-@Import(SecurityConfig.class)
+@org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc(addFilters = false)
+@org.springframework.test.context.TestPropertySource(properties = {
+    "spring.web.resources.add-mappings=false",
+    "spring.mvc.static-path-pattern=/static-disabled/**"
+})
 class AuthenticationControllerTest {
 
     @Autowired
@@ -36,17 +38,31 @@ class AuthenticationControllerTest {
     @MockBean
     private UserRepository userRepository;
 
-    @Autowired
+    @MockBean
     private PasswordEncoder passwordEncoder;
+
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
 
     private User testUser;
     private MockHttpSession session;
 
     @BeforeEach
     void setUp() {
+        // Set up password encoder mock
+        when(passwordEncoder.encode(anyString())).thenAnswer(inv -> "encoded_" + inv.getArgument(0));
+        when(passwordEncoder.matches(anyString(), anyString())).thenAnswer(inv -> {
+            String raw = inv.getArgument(0);
+            String encoded = inv.getArgument(1);
+            return encoded.equals("encoded_" + raw);
+        });
+
         testUser = new User();
         testUser.setUsername("testuser");
-        testUser.setPassword(passwordEncoder.encode("password123"));
+        testUser.setPassword("encoded_password123");
         testUser.setUserType("REGULAR");
 
         session = new MockHttpSession();
@@ -85,8 +101,7 @@ class AuthenticationControllerTest {
                 .thenReturn(List.of(testUser));
 
         mockMvc.perform(post("/login")
-                        .with(csrf())
-                        .param("username", "testuser")
+                                                .param("username", "testuser")
                         .param("password", "password123"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/dashboard"));
@@ -99,8 +114,7 @@ class AuthenticationControllerTest {
                 .thenReturn(List.of(testUser));
 
         mockMvc.perform(post("/login")
-                        .with(csrf())
-                        .param("username", "testuser")
+                                                .param("username", "testuser")
                         .param("password", "password123")
                         .param("returnUrl", "/movies"))
                 .andExpect(status().is3xxRedirection())
@@ -114,8 +128,7 @@ class AuthenticationControllerTest {
                 .thenReturn(Collections.emptyList());
 
         mockMvc.perform(post("/login")
-                        .with(csrf())
-                        .param("username", "wronguser")
+                                                .param("username", "wronguser")
                         .param("password", "wrongpassword"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"))
@@ -129,8 +142,7 @@ class AuthenticationControllerTest {
         when(userRepository.findByUsername("newuser")).thenReturn(Collections.emptyList());
 
         mockMvc.perform(post("/signup")
-                        .with(csrf())
-                        .param("firstName", "John")
+                                                .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("username", "newuser")
                         .param("password", "password123"))
@@ -144,8 +156,7 @@ class AuthenticationControllerTest {
     @DisplayName("Should reject signup with short username")
     void signup_ShortUsername() throws Exception {
         mockMvc.perform(post("/signup")
-                        .with(csrf())
-                        .param("firstName", "John")
+                                                .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("username", "abc")
                         .param("password", "password123"))
@@ -159,8 +170,7 @@ class AuthenticationControllerTest {
     @DisplayName("Should reject signup with short password")
     void signup_ShortPassword() throws Exception {
         mockMvc.perform(post("/signup")
-                        .with(csrf())
-                        .param("firstName", "John")
+                                                .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("username", "newuser")
                         .param("password", "abc"))
@@ -176,8 +186,7 @@ class AuthenticationControllerTest {
         when(userRepository.findByUsername("existinguser")).thenReturn(List.of(testUser));
 
         mockMvc.perform(post("/signup")
-                        .with(csrf())
-                        .param("firstName", "John")
+                                                .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("username", "existinguser")
                         .param("password", "password123"))
