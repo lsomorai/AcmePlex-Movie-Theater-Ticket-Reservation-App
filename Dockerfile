@@ -1,6 +1,23 @@
 # Multi-stage build for AcmePlex Movie Theater Application
 
-# Stage 1: Build
+# Stage 1: Build Frontend
+FROM node:20-alpine AS frontend-builder
+
+WORKDIR /app/frontend
+
+# Copy frontend package files
+COPY frontend/package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy frontend source
+COPY frontend/ ./
+
+# Build frontend (outputs to ../src/main/resources/static)
+RUN npm run build
+
+# Stage 2: Build Backend
 FROM eclipse-temurin:17-jdk AS builder
 
 WORKDIR /app
@@ -22,10 +39,13 @@ COPY src ./src
 # Copy config files (checkstyle, etc.)
 COPY config ./config
 
+# Copy built frontend assets from frontend-builder
+COPY --from=frontend-builder /app/src/main/resources/static ./src/main/resources/static
+
 # Build the application
 RUN ./gradlew build -x test --no-daemon
 
-# Stage 2: Run
+# Stage 3: Run
 FROM eclipse-temurin:17-jre
 
 WORKDIR /app
