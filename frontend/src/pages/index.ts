@@ -1,0 +1,14 @@
+export { LoginPage } from './LoginPage';
+export { RegisterPage } from './RegisterPage';
+export { PaymentPage } from './PaymentPage';
+export { DashboardPage } from './DashboardPage';
+export { TheatresPage } from './TheatresPage';
+export { MoviesPage } from './MoviesPage';
+export { ShowtimesPage } from './ShowtimesPage';
+export { SeatsPage } from './SeatsPage';
+export { TicketConfirmationPage } from './TicketConfirmationPage';
+export { TicketPaymentPage } from './TicketPaymentPage';
+export { BookingSuccessPage } from './BookingSuccessPage';
+export { CancellationPage } from './CancellationPage';
+export { AdminDashboardPage } from './AdminDashboardPage';
+export { AdminNotificationsPage } from './AdminNotificationsPage';

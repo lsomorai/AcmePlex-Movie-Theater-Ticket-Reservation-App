@@ -15,4 +15,6 @@ public class AuthResponse {
     private String username;
     private String userType;
     private String email;
+    private String accessToken;
+    private String refreshToken;
 }

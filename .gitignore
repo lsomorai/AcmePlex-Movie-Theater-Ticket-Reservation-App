@@ -36,5 +36,18 @@ out/
 ### VS Code ###
 .vscode/
 
+### Maven ###
+target/
+
+### Frontend ###
+frontend/node_modules/
+frontend/dist/
+
+### Environment ###
 .env
+*.local
 src/main/resources/application-local.properties
+
+### OS ###
+.DS_Store
+Thumbs.db
